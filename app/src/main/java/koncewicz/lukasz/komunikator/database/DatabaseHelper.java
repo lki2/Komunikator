@@ -1,9 +1,11 @@
-package koncewicz.lukasz.komunikator;
+package koncewicz.lukasz.komunikator.database;
 
 import android.content.Context;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
+
+import koncewicz.lukasz.komunikator.FeedReaderContract;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

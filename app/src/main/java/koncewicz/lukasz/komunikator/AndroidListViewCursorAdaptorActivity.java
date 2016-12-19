@@ -1,6 +1,5 @@
 package koncewicz.lukasz.komunikator;
 
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -41,7 +40,6 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
 
     private void displayListView() {
 
-
         Cursor cursor = dbHelper.fetchAllCountries();
 
         // The desired columns to be bound
@@ -52,22 +50,6 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
                 CountriesDbAdapter.KEY_REGION
         };
 
-        // the XML defined views which the data will be bound to
-        int[] to = new int[] {
-                R.id.code,
-                R.id.name,
-                R.id.continent,
-                R.id.region,
-        };
-
-        // create the adapter using the cursor pointing to the desired data
-        //as well as the layout information
-        /*dataAdapter = new SimpleCursorAdapter(
-                this, R.layout.message,
-                cursor,
-                columns,
-                to,
-                0);*/
         dataAdapter = new MessageCursorAdapter(this, cursor);
 
         ListView listView = (ListView) findViewById(R.id.listView1);

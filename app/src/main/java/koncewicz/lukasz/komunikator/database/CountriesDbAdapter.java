@@ -41,7 +41,6 @@ public class CountriesDbAdapter {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
-
         @Override
         public void onCreate(SQLiteDatabase db) {
             Log.w(TAG, DATABASE_CREATE);

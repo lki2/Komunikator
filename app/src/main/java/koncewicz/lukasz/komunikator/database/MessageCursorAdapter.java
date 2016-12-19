@@ -2,8 +2,6 @@ package koncewicz.lukasz.komunikator.database;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +21,7 @@ public class MessageCursorAdapter extends CursorAdapter {
     // you don't bind any data to the view at this point.
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.message, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.chat_list_item, parent, false);
     }
 
     // The bindView method is used to bind all data to a given view
@@ -31,24 +29,24 @@ public class MessageCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
+        LinearLayout root = (LinearLayout) view;
+        if (false) {
+            root.setGravity(Gravity.RIGHT);
+            root.setPadding(50, 5, 10, 5);
+            view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.my_msg_bg));
+        } else {
+            root.setGravity(Gravity.LEFT);
+            root.setPadding(10, 5, 50, 5);
+            view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.foreign_msg_bg));
+        }
 
-        // Find fields to populate in inflated template
-        TextView tvContinent = (TextView) view.findViewById(R.id.continent);
-        TextView tvRegion = (TextView) view.findViewById(R.id.region);
-        TextView tvCode = (TextView) view.findViewById(R.id.code);
-        TextView tvName = (TextView) view.findViewById(R.id.name);
+        TextView tvContinent = (TextView) view.findViewById(R.id.msgText);
+        TextView tvRegion = (TextView) view.findViewById(R.id.msgTime);
 
-        // Extract properties from cursor
         String continent = cursor.getString(cursor.getColumnIndexOrThrow(CountriesDbAdapter.KEY_CONTINENT));
         String region = cursor.getString(cursor.getColumnIndexOrThrow(CountriesDbAdapter.KEY_REGION));
-        String code = cursor.getString(cursor.getColumnIndexOrThrow(CountriesDbAdapter.KEY_CODE));
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(CountriesDbAdapter.KEY_NAME));
 
-
-        // Populate fields with extracted properties
         tvContinent.setText(continent);
         tvRegion.setText(region);
-        tvCode.setText(code);
-        tvName.setText(name);
     }
 }

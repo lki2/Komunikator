@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="myMessage">#915b5b91</color>
-    <color name="foreginMessage">#e9e37c</color>
+    <color name="myMsgBg">#9e5a5a</color>
+    <color name="foreignMsgBg">#699e5a</color>
 </resources>
