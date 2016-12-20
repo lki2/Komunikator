@@ -29,12 +29,12 @@ public class DatabaseAdapter {
     private static final String TABLE_KEYS = "keys";
 
     // Common column names
-    private static final String COLUMN_ID = "_id";
-    private static final String COLUMN_CREATED_AT = "created_at";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_CREATED_AT = "created_at";
 
     // USERS Table - column nmaes
-    private static final String COLUMN_PHONE = "phone";
-    private static final String COLUMN_USERNAME = "username";
+    public static final String COLUMN_PHONE = "phone";
+    public static final String COLUMN_USERNAME = "username";
 
     // CHATS Table - column names
     public static final String COLUMN_USER_ID = "user_id";
@@ -73,11 +73,14 @@ public class DatabaseAdapter {
         mDb = mDbHelper.getWritableDatabase(pass);
         return this;
     }
+
     public void close() {
         if (mDbHelper != null) {
             mDbHelper.close();
         }
     }
+
+
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -109,7 +112,14 @@ public class DatabaseAdapter {
         return mDb.insert(TABLE_CHATS, null, initialValues);
     }
 
-    public void testChat() {
+    private long addUser(UserPOJO user) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_PHONE, user.getPhone());
+        initialValues.put(COLUMN_USERNAME, user.getUsername());
+        return mDb.insert(TABLE_USERS, null, initialValues);
+    }
+
+    public void addtChats() {
         addMsg(new MessagePOJO(1, "debranaA", MessagePOJO.Status.RECEIVED));
         addMsg(new MessagePOJO(1, "wyslanaB", MessagePOJO.Status.SENT));
         addMsg(new MessagePOJO(1, "niewyslanaC", MessagePOJO.Status.FAILURE));
@@ -119,10 +129,30 @@ public class DatabaseAdapter {
         Log.d(TAG, "dodano wiadomosci");
     }
 
+    public void addUsers(){
+        addUser(new UserPOJO("phone1", "username1"));
+        addUser(new UserPOJO("phone2", "username2"));
+        addUser(new UserPOJO("phone3", "username3"));
+        Log.d(TAG, "dodano uzytkownikow");
+    }
+
+
+
     public Cursor fetchChat(int userId){
-        Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME, COLUMN_USER_ID,
-                        COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_USER_ID + " = " + userId,
+        Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME,
+                COLUMN_USER_ID, COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_USER_ID + " = " + userId,
                 null, null, null, null, null);
+
+        if (mCursor != null) {
+            mCursor.moveToFirst();
+            Log.d(TAG, "pobrano wiadomosci");
+        }
+        return mCursor;
+    }
+
+    public Cursor fetchUsers() {
+        Cursor mCursor = mDb.query(TABLE_USERS, new String[] {COLUMN_ID, COLUMN_PHONE,
+                COLUMN_USERNAME}, null, null, null, null, null);
 
         if (mCursor != null) {
             mCursor.moveToFirst();

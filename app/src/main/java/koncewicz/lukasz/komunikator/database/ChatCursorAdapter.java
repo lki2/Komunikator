@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import koncewicz.lukasz.komunikator.R;
 
-public class ChatsCursorAdapter extends CursorAdapter {
-    public ChatsCursorAdapter(Context context, Cursor cursor) {
+public class ChatCursorAdapter extends CursorAdapter {
+    public ChatCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }
 

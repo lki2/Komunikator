@@ -6,14 +6,9 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 
-import koncewicz.lukasz.komunikator.R;
-
-public class MessagesFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private OnFragmentInteractionListener mListener;
     private SimpleCursorAdapter adapter;

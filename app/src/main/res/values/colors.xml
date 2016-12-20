@@ -4,8 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="myMsgBg">#9e5a5a</color>
-    <color name="failureMsgBg">#be9090</color>
-    <color name="failureMsgFg">#616060</color>
+    <color name="myMsgBg">#b75959</color>
+    <color name="failureMsgBg">#c9a3a3</color>
+    <color name="failureMsgFg">#848484</color>
     <color name="foreignMsgBg">#699e5a</color>
 </resources>

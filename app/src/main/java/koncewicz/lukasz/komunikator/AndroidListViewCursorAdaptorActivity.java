@@ -1,78 +1,45 @@
 package koncewicz.lukasz.komunikator;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
-import koncewicz.lukasz.komunikator.database.ChatsCursorAdapter;
+
+import koncewicz.lukasz.komunikator.database.ChatCursorAdapter;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import net.sqlcipher.Cursor;
+import koncewicz.lukasz.komunikator.database.UsersFragment;
+import koncewicz.lukasz.komunikator.database.ChatFragment;
+
 import net.sqlcipher.database.SQLiteDatabase;
+import android.support.v4.app.FragmentActivity;
 
-public class AndroidListViewCursorAdaptorActivity extends Activity {
-
-    private DatabaseAdapter dbAdapter;
-    private ChatsCursorAdapter dataAdapter;
+public class AndroidListViewCursorAdaptorActivity extends FragmentActivity {
+    DatabaseAdapter dbAdapter;
+    ChatCursorAdapter dataAdapter;
     ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.chat);
+        setContentView(R.layout.activity_main);
 
         SQLiteDatabase.loadLibs(this);
 
-        chat();
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) return;
+
+            UsersFragment firstFragment = new UsersFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            firstFragment.setArguments(getIntent().getExtras());
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment).commit();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dbAdapter.close();
-    }
-
-    private void chat() {
-
-        dbAdapter = new DatabaseAdapter(this);
-        dbAdapter.open("123");
-        dbAdapter.testChat();
-
-        Cursor cursor = dbAdapter.fetchChat(2); //todo
-
-        dataAdapter = new ChatsCursorAdapter(this, cursor);
-
-        listView = (ListView) findViewById(R.id.listView1);
-        listView.setAdapter(dataAdapter);
-
-        listView.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> listView, View view,
-                                    int position, long id) {
-                // Get the cursor, positioned to the corresponding row in the result set
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-
-                // Get the state's capital from this row in the database.
-                String countryCode =
-                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
-                Toast.makeText(getApplicationContext(),
-                        countryCode, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        scrollMyListViewToBottom();
-    }
-
-    private void scrollMyListViewToBottom() {
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-                // Select the last row so it will scroll into view...
-                listView.setSelection(dataAdapter.getCount() - 1);
-            }
-        });
     }
 
     /*
