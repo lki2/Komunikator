@@ -1,61 +1,52 @@
 package koncewicz.lukasz.komunikator;
 
 import android.app.Activity;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.FilterQueryProvider;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-import koncewicz.lukasz.komunikator.database.CountriesDbAdapter;
-import koncewicz.lukasz.komunikator.database.MessageCursorAdapter;
+import koncewicz.lukasz.komunikator.database.ChatsCursorAdapter;
+import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
+import net.sqlcipher.Cursor;
+import net.sqlcipher.database.SQLiteDatabase;
 
 public class AndroidListViewCursorAdaptorActivity extends Activity {
 
-    private CountriesDbAdapter dbHelper;
-    private MessageCursorAdapter dataAdapter;
+    private DatabaseAdapter dbAdapter;
+    private ChatsCursorAdapter dataAdapter;
+    ListView listView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat);
 
-        dbHelper = new CountriesDbAdapter(this);
-        dbHelper.open();
+        SQLiteDatabase.loadLibs(this);
 
-        //Clean all data
-        dbHelper.deleteAllCountries();
-        //Add some data
-        dbHelper.insertSomeCountries();
-
-        //Generate ListView from SQLite Database
-        displayListView();
-
+        chat();
     }
 
-    private void displayListView() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dbAdapter.close();
+    }
 
-        Cursor cursor = dbHelper.fetchAllCountries();
+    private void chat() {
 
-        // The desired columns to be bound
-        String[] columns = new String[] {
-                CountriesDbAdapter.KEY_CODE,
-                CountriesDbAdapter.KEY_NAME,
-                CountriesDbAdapter.KEY_CONTINENT,
-                CountriesDbAdapter.KEY_REGION
-        };
 
-        dataAdapter = new MessageCursorAdapter(this, cursor);
+        dbAdapter = new DatabaseAdapter(this);
+        dbAdapter.open("123");
+        dbAdapter.testChat();
 
-        ListView listView = (ListView) findViewById(R.id.listView1);
-        // Assign adapter to ListView
+        Cursor cursor = dbAdapter.fetchChat(1); //todo
+
+        dataAdapter = new ChatsCursorAdapter(this, cursor);
+
+        listView = (ListView) findViewById(R.id.listView1);
         listView.setAdapter(dataAdapter);
-
 
         listView.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -66,12 +57,28 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
 
                 // Get the state's capital from this row in the database.
                 String countryCode =
-                        cursor.getString(cursor.getColumnIndexOrThrow("code"));
+                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
                 Toast.makeText(getApplicationContext(),
                         countryCode, Toast.LENGTH_SHORT).show();
 
             }
         });
+
+        scrollMyListViewToBottom();
+    }
+
+    private void scrollMyListViewToBottom() {
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                listView.setSelection(dataAdapter.getCount() - 1);
+            }
+        });
+    }
+
+    /*
+    private void countries() {
 
         EditText myFilter = (EditText) findViewById(R.id.myFilter);
         myFilter.addTextChangedListener(new TextWatcher() {
@@ -90,10 +97,10 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
         });
 
         dataAdapter.setFilterQueryProvider(new FilterQueryProvider() {
-            public Cursor runQuery(CharSequence constraint) {
-                return dbHelper.fetchCountriesByName(constraint.toString());
+            public android.database.Cursor runQuery(CharSequence constraint) {
+                return db1Helper.fetchCountriesByName(constraint.toString());
             }
         });
 
-    }
+    }*/
 }
