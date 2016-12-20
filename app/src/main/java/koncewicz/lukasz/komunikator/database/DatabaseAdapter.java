@@ -19,7 +19,7 @@ public class DatabaseAdapter {
     private final Context mCtx;
 
     // Database Version
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 6;
     // Database Name
     private static final String DATABASE_NAME = "komunikator";
 
@@ -103,20 +103,25 @@ public class DatabaseAdapter {
 
     public long addMsg(MessagePOJO msg) {
         ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_USER_ID, msg.getUserId());
         initialValues.put(COLUMN_CONTENT, msg.getContent());
         initialValues.put(COLUMN_STATUS, msg.getStatus().getValue());
         return mDb.insert(TABLE_CHATS, null, initialValues);
     }
 
     public void testChat() {
-        addMsg(new MessagePOJO("wiadomoscA", MessagePOJO.Status.RECEIVED));
-        addMsg(new MessagePOJO("wiadomoscB", MessagePOJO.Status.SENT));
+        addMsg(new MessagePOJO(1, "debranaA", MessagePOJO.Status.RECEIVED));
+        addMsg(new MessagePOJO(1, "wyslanaB", MessagePOJO.Status.SENT));
+        addMsg(new MessagePOJO(1, "niewyslanaC", MessagePOJO.Status.FAILURE));
+        addMsg(new MessagePOJO(2, "Chat2idebranaA", MessagePOJO.Status.RECEIVED));
+        addMsg(new MessagePOJO(2, "Chat2wyslanaB", MessagePOJO.Status.SENT));
+        addMsg(new MessagePOJO(2, "Chat2niewyslanaC", MessagePOJO.Status.FAILURE));
         Log.d(TAG, "dodano wiadomosci");
     }
 
-    public Cursor fetchChat(int chatId){
-        Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID,
-                        COLUMN_CONTENT, COLUMN_STATUS},
+    public Cursor fetchChat(int userId){
+        Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME, COLUMN_USER_ID,
+                        COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_USER_ID + " = " + userId,
                 null, null, null, null, null);
 
         if (mCursor != null) {
@@ -133,27 +138,4 @@ public class DatabaseAdapter {
         return doneDelete > 0;
 
     }
-/*
-    public Cursor fetchCountriesByName(String inputText) throws SQLException {
-        Log.w(TAG, inputText);
-        Cursor mCursor = null;
-        if (inputText == null  ||  inputText.length () == 0)  {
-            mCursor = mDb.query(SQLITE_TABLE, new String[] {KEY_ROWID,
-                            KEY_CODE, KEY_NAME, KEY_CONTINENT, KEY_REGION},
-                    null, null, null, null, null);
-
-        }
-        else {
-            mCursor = mDb.query(true, SQLITE_TABLE, new String[] {KEY_ROWID,
-                            KEY_CODE, KEY_NAME, KEY_CONTINENT, KEY_REGION},
-                    KEY_NAME + " like '%" + inputText + "%'", null,
-                    null, null, null, null);
-        }
-        if (mCursor != null) {
-            mCursor.moveToFirst();
-        }
-        return mCursor;
-
-    }
-*/
 }

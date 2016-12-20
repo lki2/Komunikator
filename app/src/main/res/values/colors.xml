@@ -5,5 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="myMsgBg">#9e5a5a</color>
+    <color name="failureMsgBg">#be9090</color>
+    <color name="failureMsgFg">#616060</color>
     <color name="foreignMsgBg">#699e5a</color>
 </resources>

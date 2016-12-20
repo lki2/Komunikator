@@ -36,12 +36,11 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
 
     private void chat() {
 
-
         dbAdapter = new DatabaseAdapter(this);
         dbAdapter.open("123");
         dbAdapter.testChat();
 
-        Cursor cursor = dbAdapter.fetchChat(1); //todo
+        Cursor cursor = dbAdapter.fetchChat(2); //todo
 
         dataAdapter = new ChatsCursorAdapter(this, cursor);
 
@@ -60,7 +59,6 @@ public class AndroidListViewCursorAdaptorActivity extends Activity {
                         cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
                 Toast.makeText(getApplicationContext(),
                         countryCode, Toast.LENGTH_SHORT).show();
-
             }
         });
 
