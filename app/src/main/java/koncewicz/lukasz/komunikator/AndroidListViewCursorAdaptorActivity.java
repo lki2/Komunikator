@@ -6,7 +6,6 @@ import android.widget.ListView;
 import koncewicz.lukasz.komunikator.database.ChatCursorAdapter;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.UsersFragment;
-import koncewicz.lukasz.komunikator.database.ChatFragment;
 
 import net.sqlcipher.database.SQLiteDatabase;
 import android.support.v4.app.FragmentActivity;

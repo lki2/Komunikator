@@ -80,8 +80,6 @@ public class DatabaseAdapter {
         }
     }
 
-
-
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
         private DatabaseHelper(Context context) {
@@ -119,25 +117,6 @@ public class DatabaseAdapter {
         return mDb.insert(TABLE_USERS, null, initialValues);
     }
 
-    public void addtChats() {
-        addMsg(new MessagePOJO(1, "debranaA", MessagePOJO.Status.RECEIVED));
-        addMsg(new MessagePOJO(1, "wyslanaB", MessagePOJO.Status.SENT));
-        addMsg(new MessagePOJO(1, "niewyslanaC", MessagePOJO.Status.FAILURE));
-        addMsg(new MessagePOJO(2, "Chat2idebranaA", MessagePOJO.Status.RECEIVED));
-        addMsg(new MessagePOJO(2, "Chat2wyslanaB", MessagePOJO.Status.SENT));
-        addMsg(new MessagePOJO(2, "Chat2niewyslanaC", MessagePOJO.Status.FAILURE));
-        Log.d(TAG, "dodano wiadomosci");
-    }
-
-    public void addUsers(){
-        addUser(new UserPOJO("phone1", "username1"));
-        addUser(new UserPOJO("phone2", "username2"));
-        addUser(new UserPOJO("phone3", "username3"));
-        Log.d(TAG, "dodano uzytkownikow");
-    }
-
-
-
     public Cursor fetchChat(int userId){
         Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME,
                 COLUMN_USER_ID, COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_USER_ID + " = " + userId,
@@ -166,6 +145,22 @@ public class DatabaseAdapter {
         doneDelete = mDb.delete(TABLE_CHATS, null , null);
         Log.w(TAG, Integer.toString(doneDelete));
         return doneDelete > 0;
+    }
 
+    public void addChats() {
+        addMsg(new MessagePOJO(1, "debranaA", MessagePOJO.Status.RECEIVED));
+        addMsg(new MessagePOJO(1, "wyslanaB", MessagePOJO.Status.SENT));
+        addMsg(new MessagePOJO(1, "niewyslanaC", MessagePOJO.Status.FAILURE));
+        addMsg(new MessagePOJO(2, "Chat2idebranaA", MessagePOJO.Status.RECEIVED));
+        addMsg(new MessagePOJO(2, "Chat2wyslanaB", MessagePOJO.Status.SENT));
+        addMsg(new MessagePOJO(2, "Chat2niewyslanaC", MessagePOJO.Status.FAILURE));
+        Log.d(TAG, "dodano wiadomosci");
+    }
+
+    public void addUsers(){
+        addUser(new UserPOJO("phone1", "username1"));
+        addUser(new UserPOJO("phone2", "username2"));
+        addUser(new UserPOJO("phone3", "username3"));
+        Log.d(TAG, "dodano uzytkownikow");
     }
 }

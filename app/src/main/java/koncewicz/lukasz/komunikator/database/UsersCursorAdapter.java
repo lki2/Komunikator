@@ -13,6 +13,7 @@ import android.widget.TextView;
 import koncewicz.lukasz.komunikator.R;
 
 public class UsersCursorAdapter extends CursorAdapter {
+
     public UsersCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }

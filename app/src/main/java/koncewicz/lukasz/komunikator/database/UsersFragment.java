@@ -1,10 +1,12 @@
 package koncewicz.lukasz.komunikator.database;
 
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import net.sqlcipher.Cursor;
@@ -41,6 +43,29 @@ public class UsersFragment extends Fragment{
 
         listView = (ListView) getView().findViewById(R.id.usersList);
         listView.setAdapter(dataAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view,
+                                    int position, long id) {
+
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+
+                // Get the state's capital from this row in the database.
+                int userId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
+
+                openChat(1);
+            }
+        });
+    }
+
+    private void openChat(int userId){
+        ChatFragment firstFragment = ChatFragment.newInstance(userId);
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, firstFragment, "dd");
+        fragmentTransaction.addToBackStack("dd");
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
     @Override

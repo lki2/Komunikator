@@ -15,9 +15,18 @@ import koncewicz.lukasz.komunikator.R;
 
 public class ChatFragment extends Fragment{
 
+    private final static String USER_ID = "userId";
     DatabaseAdapter dbAdapter;
     ChatCursorAdapter dataAdapter;
     ListView listView;
+
+    public static ChatFragment newInstance(int userId) {
+        ChatFragment f = new ChatFragment();
+        Bundle args = new Bundle();
+        args.putInt(USER_ID, userId);
+        f.setArguments(args);
+        return f;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,9 +45,11 @@ public class ChatFragment extends Fragment{
 
         dbAdapter = new DatabaseAdapter(getContext());
         dbAdapter.open("123");
-        //dbAdapter.testChat();
+        //dbAdapter.addChats();
+        //dbAdapter.addUsers();
 
-        Cursor cursor = dbAdapter.fetchChat(1); //todo
+        int userId = getArguments().getInt(USER_ID, -1);
+        Cursor cursor = dbAdapter.fetchChat(userId);
 
         dataAdapter = new ChatCursorAdapter(getContext(), cursor);
 
