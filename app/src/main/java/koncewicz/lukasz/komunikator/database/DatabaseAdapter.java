@@ -19,7 +19,7 @@ public class DatabaseAdapter {
     private final Context mCtx;
 
     // Database Version
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 8;
     // Database Name
     private static final String DATABASE_NAME = "komunikator";
 
@@ -78,6 +78,9 @@ public class DatabaseAdapter {
         if (mDbHelper != null) {
             mDbHelper.close();
         }
+        if (mDb != null){
+            mDb.close();
+        }
     }
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -110,14 +113,25 @@ public class DatabaseAdapter {
         return mDb.insert(TABLE_CHATS, null, initialValues);
     }
 
-    private long addUser(UserPOJO user) {
+    public long addUser(UserPOJO user) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(COLUMN_PHONE, user.getPhone());
         initialValues.put(COLUMN_USERNAME, user.getUsername());
         return mDb.insert(TABLE_USERS, null, initialValues);
     }
 
-    public Cursor fetchChat(int userId){
+    public long findUser(String phone){
+        Cursor mCursor = mDb.query(TABLE_USERS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_USERNAME}, COLUMN_PHONE + " = '" + phone + "'",
+                null, null, null, null, null);
+        if (mCursor != null && mCursor.getCount() >= 1) {
+            mCursor.moveToFirst();
+            return mCursor.getLong(mCursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
+        } else {
+            return -1;
+        }
+    }
+
+    public Cursor fetchChat(long userId){
         Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME,
                 COLUMN_USER_ID, COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_USER_ID + " = " + userId,
                 null, null, null, null, null);
@@ -158,8 +172,8 @@ public class DatabaseAdapter {
     }
 
     public void addUsers(){
-        addUser(new UserPOJO("phone1", "username1"));
-        addUser(new UserPOJO("phone2", "username2"));
+        addUser(new UserPOJO("737473606", "Maria"));
+        addUser(new UserPOJO("790561175", "Łukasz"));
         addUser(new UserPOJO("phone3", "username3"));
         Log.d(TAG, "dodano uzytkownikow");
     }

@@ -16,6 +16,8 @@ import koncewicz.lukasz.komunikator.R;
 public class UsersFragment extends Fragment{
 
     DatabaseAdapter dbAdapter;
+    Cursor usersCursor;
+
     UsersCursorAdapter dataAdapter;
     ListView listView;
 
@@ -23,6 +25,13 @@ public class UsersFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.users_fragment, container, false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroy();
+        usersCursor.close();
+        dbAdapter.close();
     }
 
     @Override
@@ -37,9 +46,8 @@ public class UsersFragment extends Fragment{
         dbAdapter.open("123");
         //dbAdapter.addUsers();
 
-        Cursor cursor = dbAdapter.fetchUsers(); //todo
-
-        dataAdapter = new UsersCursorAdapter(getContext(), cursor);
+        usersCursor = dbAdapter.fetchUsers();
+        dataAdapter = new UsersCursorAdapter(getContext(), usersCursor);
 
         listView = (ListView) getView().findViewById(R.id.usersList);
         listView.setAdapter(dataAdapter);
@@ -51,16 +59,17 @@ public class UsersFragment extends Fragment{
 
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-                // Get the state's capital from this row in the database.
-                int userId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
+                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
+                String phone = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_PHONE));
+                String username = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_USERNAME));
 
-                openChat(1);
+                openChat(userId, phone, username);
             }
         });
     }
 
-    private void openChat(int userId){
-        ChatFragment firstFragment = ChatFragment.newInstance(userId);
+    private void openChat(long userId, String phone, String username){
+        ChatFragment firstFragment = ChatFragment.newInstance(userId, phone , username);
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, firstFragment, "dd");
@@ -68,9 +77,4 @@ public class UsersFragment extends Fragment{
         fragmentTransaction.commitAllowingStateLoss();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        dbAdapter.close();
-    }
 }

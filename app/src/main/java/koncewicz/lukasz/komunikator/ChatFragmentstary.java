@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.SimpleCursorAdapter;
 
-public class ChatFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ChatFragmentstary extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private OnFragmentInteractionListener mListener;
     private SimpleCursorAdapter adapter;

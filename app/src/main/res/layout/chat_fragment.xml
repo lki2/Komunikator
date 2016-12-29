@@ -6,8 +6,8 @@
 
     <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content" android:padding="10dp"
-        android:text="ChatName" android:textSize="20sp"
-        android:id="@+id/textView" />
+        android:textSize="20sp"
+        android:id="@+id/chatName" />
 
     <ListView android:id="@+id/chatList"
         android:layout_width="match_parent"
@@ -21,18 +21,18 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white" >
         <Button
-            android:id="@+id/send_btn"
+            android:id="@+id/btSend"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="Send" />
         <EditText
-            android:id="@+id/myFilter"
+            android:id="@+id/etMsgContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/send_btn"
-            android:layout_toLeftOf="@+id/send_btn" >
+            android:layout_alignBottom="@+id/btSend"
+            android:layout_toLeftOf="@+id/btSend" >
         </EditText>
     </RelativeLayout>
 
