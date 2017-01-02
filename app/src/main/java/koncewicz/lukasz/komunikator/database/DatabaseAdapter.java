@@ -12,7 +12,7 @@ import net.sqlcipher.database.SQLiteOpenHelper;
 public class DatabaseAdapter {
 
     // Logcat tag
-    private static final String TAG = DatabaseHelper.class.getName();
+    private static final String TAG = DatabaseAdapter.class.getName();
 
     private DatabaseHelper mDbHelper;
     private SQLiteDatabase mDb;

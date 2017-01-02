@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     testCompile 'junit:junit:4.12'
     compile 'net.zetetic:android-database-sqlcipher:3.5.4@aar'
+    compile 'info.guardianproject.cacheword:cachewordlib:0.1'
 }

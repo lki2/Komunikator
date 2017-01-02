@@ -143,13 +143,13 @@ public class ChatFragment extends Fragment{
         dbAdapter.addMsg(msg);
         refreshList();
     }
+
     private void refreshList(){
         chatCursor.close();
         chatCursor = dbAdapter.fetchChat(userId);
         dataAdapter.swapCursor(chatCursor);
         scrollMyListViewToBottom();
     }
-
 
     private void sendMsg(MessagePOJO msg){
         new SmsHelper(getContext()).sendBinary(phone, msg.getContent());

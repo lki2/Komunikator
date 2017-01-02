@@ -19,11 +19,13 @@ public class BinarySMSReceiver extends BroadcastReceiver
 
     Context context;
 
+    //todo szyfrowanie
     //todo dodawanie kontaktu
     //todo edycja kontaktu
-    //todo szyfrowanie
+    //todo usuwanie wiadomosci
     //todo status wiadomosci
-    //todo odswiezanie listy uzytkownikow
+    //todo odswiezanie listy uzytkownikow ++
+    //todo wprawadzanie hasla do bazy danych CacheWord
 
     @Override
     public void onReceive(Context context, Intent intent)
