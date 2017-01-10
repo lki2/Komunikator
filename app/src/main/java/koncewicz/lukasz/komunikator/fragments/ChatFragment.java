@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.database;
+package koncewicz.lukasz.komunikator.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,9 +18,15 @@ import android.widget.Toast;
 
 import net.sqlcipher.Cursor;
 
-import koncewicz.lukasz.komunikator.BinarySMSReceiver;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import koncewicz.lukasz.komunikator.utils.RsaHelper;
+import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
-import koncewicz.lukasz.komunikator.SmsHelper;
+import koncewicz.lukasz.komunikator.utils.SmsHelper;
+import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
+import koncewicz.lukasz.komunikator.database.MessagePOJO;
 
 public class ChatFragment extends Fragment{
 
@@ -78,7 +84,7 @@ public class ChatFragment extends Fragment{
     public void onResume() {
         super.onResume();
         getContext().registerReceiver(broadcastBufferReceiver,
-                new IntentFilter(BinarySMSReceiver.BROADCAST_BUFFER_SEND_CODE));
+                new IntentFilter(SmsReceiver.BROADCAST_BUFFER_SEND_CODE));
     }
 
     @Override
@@ -91,13 +97,13 @@ public class ChatFragment extends Fragment{
     public void onDestroyView() {
         super.onDestroyView();
         chatCursor.close();
-        dbAdapter.close();
+        //dbAdapter.close();
     }
 
     private void setListView() {
-        dbAdapter = new DatabaseAdapter(getContext());
+        dbAdapter = DatabaseAdapter.getInstance(getContext());
         dbAdapter.open("123");
-        //dbAdapter.addChats();
+
 
         chatCursor = dbAdapter.fetchChat(userId);
         dataAdapter = new ChatCursorAdapter(getContext(), chatCursor);
@@ -134,7 +140,8 @@ public class ChatFragment extends Fragment{
                 MessagePOJO msg = new MessagePOJO(userId, msgContent, MessagePOJO.Status.SENT);
 
                 addMsgToDb(msg);
-                sendMsg(msg);
+                encryptMsgAndSend(msg);
+                sendMsg(msg.getContent());
             }
         });
     }
@@ -151,8 +158,30 @@ public class ChatFragment extends Fragment{
         scrollMyListViewToBottom();
     }
 
-    private void sendMsg(MessagePOJO msg){
-        new SmsHelper(getContext()).sendBinary(phone, msg.getContent());
+    private void encryptMsgAndSend(MessagePOJO msg){
+        try{
+            MessagePOJO encryptedMsg = msg;
+            byte[] encryptedContent;
+
+
+            PublicKey pubK = RsaHelper.publicKeyFromBase64(dbAdapter.getKey(11L));
+            PrivateKey privK = RsaHelper.privateKeyFromBase64(dbAdapter.getKey(11L));
+
+            encryptedContent = RsaHelper.RSAEncrypt(msg.getContent(), pubK);
+            encryptedContent = RsaHelper.RSAEncrypt(encryptedContent, privK);
+
+            sendMsg(encryptedContent);
+
+        }catch (Exception e){
+        }
+    }
+
+    private void sendMsg(byte[] msg){
+        new SmsHelper(getContext()).send(phone, msg);
+    }
+
+    private void sendMsg(String msg){
+        new SmsHelper(getContext()).send(phone, msg);
     }
 
     private void scrollMyListViewToBottom() {

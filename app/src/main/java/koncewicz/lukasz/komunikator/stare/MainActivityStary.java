@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator;
+package koncewicz.lukasz.komunikator.stare;
 
 import java.io.File;
 import android.app.Activity;
@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import net.sqlcipher.database.SQLiteDatabase;
+
+import koncewicz.lukasz.komunikator.R;
 
 public class MainActivityStary extends Activity implements View.OnClickListener{
 

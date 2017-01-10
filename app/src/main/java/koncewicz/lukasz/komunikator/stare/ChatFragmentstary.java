@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator;
+package koncewicz.lukasz.komunikator.stare;
 
 import android.app.Activity;
 import android.app.ListFragment;

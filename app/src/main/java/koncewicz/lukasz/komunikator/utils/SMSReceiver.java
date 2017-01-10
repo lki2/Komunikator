@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator;
+package koncewicz.lukasz.komunikator.utils;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,18 +8,21 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
 import koncewicz.lukasz.komunikator.database.UserPOJO;
 
-public class BinarySMSReceiver extends BroadcastReceiver
+public class SmsReceiver extends BroadcastReceiver
 {
-    private final static String TAG = "BinarySMSReceiver";
-    public static final String BROADCAST_BUFFER_SEND_CODE = "koncewicz.lukasz.komunikator.SEND_CODE";
+    private final static String TAG = SmsReceiver.class.getName();
+    public static final String BROADCAST_BUFFER_SEND_CODE = "koncewicz.lukasz.komunikator.utils.SEND_CODE";
 
     Context context;
 
-    //todo szyfrowanie
+    //todo szyfrowanie ++
+    //todo exceptions in RSA cipher
     //todo dodawanie kontaktu
     //todo edycja kontaktu
     //todo usuwanie wiadomosci
@@ -68,18 +71,32 @@ public class BinarySMSReceiver extends BroadcastReceiver
     }
 
     private void addMsgToDb(String phone, String content){
-        DatabaseAdapter dbAdapter = new DatabaseAdapter(context);
-        dbAdapter.open("123");
-        long userId = dbAdapter.findUser(phone);
-        if(userId == -1){
-            UserPOJO user = new UserPOJO(phone, "nowy kontakt");
-            userId = dbAdapter.addUser(user);
+        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context);
+        if (dbAdapter.isOpen()){
+            long userId = dbAdapter.findUser(phone);
+            if(userId == -1){
+                UserPOJO user = new UserPOJO(phone, "nowy kontakt");
+                userId = dbAdapter.addUser(user);
+            }
+            if(userId != -1){
+                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
+                dbAdapter.addMsg(msg);
+            }
+        }else{
+            SQLiteDatabase.loadLibs(context);
+            dbAdapter.open("123");
+
+            long userId = dbAdapter.findUser(phone);
+            if(userId == -1){
+                UserPOJO user = new UserPOJO(phone, "nowy kontakt");
+                userId = dbAdapter.addUser(user);
+            }
+            if(userId != -1){
+                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
+                dbAdapter.addMsg(msg);
+            }
+            dbAdapter.close();
         }
-        if(userId != -1){
-            MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
-            dbAdapter.addMsg(msg);
-        }
-        dbAdapter.close();
     }
 
     private void refreshView(String phone){

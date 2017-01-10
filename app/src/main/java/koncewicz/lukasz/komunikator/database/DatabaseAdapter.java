@@ -14,12 +14,13 @@ public class DatabaseAdapter {
     // Logcat tag
     private static final String TAG = DatabaseAdapter.class.getName();
 
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
-    private final Context mCtx;
+    private static DatabaseAdapter sInstance;
+    private static DatabaseHelper mDbHelper;
+    private static SQLiteDatabase mDb;
+    private Context mCtx;
 
     // Database Version
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 12;
     // Database Name
     private static final String DATABASE_NAME = "komunikator";
 
@@ -42,44 +43,78 @@ public class DatabaseAdapter {
     public static final String COLUMN_CONTENT = "content";
     public static final String COLUMN_STATUS = "status";
 
+    // KEYS Table - column names
+    public static final String COLUMN_KEY = "key";
+
+
     private static final String TEXT_TYPE = " TEXT";
     private static final String DATETIME_TYPE = " DATETIME";
+    private static final String INTEGER_TYPE = " INTEGER";
 
     private static final String SQL_CREATE_TABLE_USERS =
             "CREATE TABLE " + TABLE_USERS + " (" +
-                    COLUMN_ID + " integer PRIMARY KEY autoincrement," +
+                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
                     COLUMN_PHONE + TEXT_TYPE + "," +
-                    COLUMN_USERNAME + TEXT_TYPE +
-                    " )";
+                    COLUMN_USERNAME + TEXT_TYPE + " )";
 
     private static final String SQL_CREATE_TABLE_CHATS =
             "CREATE TABLE " + TABLE_CHATS + " (" +
-                    COLUMN_ID + " integer PRIMARY KEY autoincrement," +
+                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
                     COLUMN_DATETIME + DATETIME_TYPE + " DEFAULT CURRENT_TIMESTAMP," +
-                    COLUMN_USER_ID + TEXT_TYPE + "," +
+                    COLUMN_USER_ID + INTEGER_TYPE + "," +
                     COLUMN_CONTENT + TEXT_TYPE + "," +
-                    COLUMN_STATUS + TEXT_TYPE +
-                    " )";
+                    COLUMN_STATUS + TEXT_TYPE + "," +
+    " FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "))";
+
+    private static final String SQL_CREATE_TABLE_KEYS =
+            "CREATE TABLE " + TABLE_KEYS + " (" +
+                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
+                    COLUMN_USER_ID + INTEGER_TYPE + "," +
+                    COLUMN_KEY + TEXT_TYPE + "," +
+                    " FOREIGN KEY(" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + COLUMN_ID + "))";
 
     private static final String SQL_DELETE_TABLE_USERS = "DROP TABLE IF EXISTS " + TABLE_USERS;
     private static final String SQL_DELETE_TABLE_CHATS = "DROP TABLE IF EXISTS " + TABLE_CHATS;
+    private static final String SQL_DELETE_TABLE_KEYS = "DROP TABLE IF EXISTS " + TABLE_KEYS;
 
-    public DatabaseAdapter(Context ctx) {
+    private DatabaseAdapter(Context ctx) {
         this.mCtx = ctx;
     }
 
-    public DatabaseAdapter open(String pass) throws SQLException {
-        mDbHelper = new DatabaseHelper(mCtx);
-        mDb = mDbHelper.getWritableDatabase(pass);
-        return this;
+    public static synchronized DatabaseAdapter getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new DatabaseAdapter(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
+    public boolean isOpen(){
+        if (mDb != null && mDb.isOpen()){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public void open(String pass) throws SQLException {
+        if (mDbHelper == null) {
+            mDbHelper = new DatabaseHelper(mCtx);
+            Log.w(TAG, "open DbHelper");
+        }
+        if (mDb == null || !mDb.isOpen()){
+            mDb = mDbHelper.getWritableDatabase(pass);
+            Log.w(TAG, "open Db");
+        }
     }
 
     public void close() {
         if (mDbHelper != null) {
             mDbHelper.close();
+            Log.w(TAG, "close DbHelper");
         }
         if (mDb != null){
             mDb.close();
+            Log.w(TAG, "close Db");
         }
     }
 
@@ -94,6 +129,8 @@ public class DatabaseAdapter {
             db.execSQL(SQL_CREATE_TABLE_USERS);
             Log.w(TAG, SQL_CREATE_TABLE_CHATS);
             db.execSQL(SQL_CREATE_TABLE_CHATS);
+            Log.w(TAG, SQL_CREATE_TABLE_KEYS);
+            db.execSQL(SQL_CREATE_TABLE_KEYS);
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -101,6 +138,7 @@ public class DatabaseAdapter {
                     + newVersion + ", which will destroy all old data");
             db.execSQL(SQL_DELETE_TABLE_USERS);
             db.execSQL(SQL_DELETE_TABLE_CHATS);
+            db.execSQL(SQL_DELETE_TABLE_KEYS);
             onCreate(db);
         }
     }
@@ -118,6 +156,24 @@ public class DatabaseAdapter {
         initialValues.put(COLUMN_PHONE, user.getPhone());
         initialValues.put(COLUMN_USERNAME, user.getUsername());
         return mDb.insert(TABLE_USERS, null, initialValues);
+    }
+
+    public long addKey(KeyPOJO key){
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_KEY, key.getKey());
+        initialValues.put(COLUMN_USER_ID, key.getUserId());
+        return mDb.insert(TABLE_KEYS, null, initialValues);
+    }
+
+    public String getKey(Long userId){
+        Cursor mCursor = mDb.query(TABLE_KEYS, new String[] {COLUMN_ID, COLUMN_USER_ID, COLUMN_KEY}, COLUMN_USER_ID + " = '" + userId + "'",
+                null, null, null, null, null);
+        if (mCursor != null && mCursor.getCount() >= 1) {
+            mCursor.moveToFirst();
+            return mCursor.getString(mCursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_KEY));
+        } else {
+            return null;
+        }
     }
 
     public long findUser(String phone){

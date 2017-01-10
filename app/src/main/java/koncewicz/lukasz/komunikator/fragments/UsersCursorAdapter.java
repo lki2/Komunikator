@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.database;
+package koncewicz.lukasz.komunikator.fragments;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import koncewicz.lukasz.komunikator.R;
+import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
 public class UsersCursorAdapter extends CursorAdapter {
 

@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator;
+package koncewicz.lukasz.komunikator.utils;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -13,7 +13,7 @@ import android.widget.Toast;
 public class SmsHelper {
 
     Context context;
-    private final static String TAG = "SmsHelper";
+    private final static String TAG = SmsHelper.class.getName();
 
     private final static String SMS_SENT = "SMS_SENT";
     private final static String SMS_DELIVERED = "SMS_DELIVERED";
@@ -23,13 +23,16 @@ public class SmsHelper {
         this.context = context;
     }
 
-    public void sendBinary(String phone, String text){
+    public void send(String phone, String text){
+        send(phone, text.getBytes());
+    }
 
+    public void send(String phone, byte[] text){
         PendingIntent sentPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_SENT), 0);
         PendingIntent deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_DELIVERED), 0);
 
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendDataMessage(phone, null, SMS_PORT, text.getBytes(), sentPendingIntent, deliveredPendingIntent);
+        smsManager.sendDataMessage(phone, null, SMS_PORT, text, sentPendingIntent, deliveredPendingIntent);
         Log.d(TAG,"wysylanie sms");
     }
 

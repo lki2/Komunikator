@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.database;
+package koncewicz.lukasz.komunikator.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +16,13 @@ import android.widget.ListView;
 
 import net.sqlcipher.Cursor;
 
-import koncewicz.lukasz.komunikator.BinarySMSReceiver;
+import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
+import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
 public class UsersFragment extends Fragment{
+
+    private static final String TAG = UsersFragment.class.getName();
 
     DatabaseAdapter dbAdapter;
     Cursor usersCursor;
@@ -36,37 +40,43 @@ public class UsersFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView()");
         return inflater.inflate(R.layout.users_fragment, container, false);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroy();
+        Log.d(TAG, "onDestroyView()");
         usersCursor.close();
-        dbAdapter.close();
+        //dbAdapter.close();
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        Log.w(TAG, "onStart()");
         users();
+        //dbAdapter.addUsers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.w(TAG, "onResume()");
         getContext().registerReceiver(broadcastBufferReceiver,
-                new IntentFilter(BinarySMSReceiver.BROADCAST_BUFFER_SEND_CODE));
+                new IntentFilter(SmsReceiver.BROADCAST_BUFFER_SEND_CODE));
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause()");
         getContext().unregisterReceiver(broadcastBufferReceiver);
     }
 
     private void users() {
-        dbAdapter = new DatabaseAdapter(getContext());
+        dbAdapter = DatabaseAdapter.getInstance(getContext());
         dbAdapter.open("123");
         //dbAdapter.addUsers();
 
