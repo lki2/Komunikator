@@ -231,6 +231,14 @@ public class DatabaseAdapter {
         addUser(new UserPOJO("737473606", "Maria"));
         addUser(new UserPOJO("790561175", "Łukasz"));
         addUser(new UserPOJO("phone3", "username3"));
+
+        addUser(new UserPOJO("phone4", "username4"));
+        addUser(new UserPOJO("phone5", "username5"));
+        addUser(new UserPOJO("phone6", "username6"));
+        addUser(new UserPOJO("phone7", "username7"));
+        addUser(new UserPOJO("phone8", "username8"));
+        addUser(new UserPOJO("phone9", "username9"));
+        addUser(new UserPOJO("phone10", "username10"));
         Log.d(TAG, "dodano uzytkownikow");
     }
 }

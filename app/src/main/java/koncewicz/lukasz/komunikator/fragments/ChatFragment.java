@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +64,7 @@ public class ChatFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.chat_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
     @Override
@@ -83,30 +83,24 @@ public class ChatFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        getContext().registerReceiver(broadcastBufferReceiver,
+        getActivity().registerReceiver(broadcastBufferReceiver,
                 new IntentFilter(SmsReceiver.BROADCAST_BUFFER_SEND_CODE));
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        getContext().unregisterReceiver(broadcastBufferReceiver);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
         chatCursor.close();
-        //dbAdapter.close();
+        getActivity().unregisterReceiver(broadcastBufferReceiver);
     }
 
     private void setListView() {
-        dbAdapter = DatabaseAdapter.getInstance(getContext());
+        dbAdapter = DatabaseAdapter.getInstance(getActivity());
         dbAdapter.open("123");
 
 
         chatCursor = dbAdapter.fetchChat(userId);
-        dataAdapter = new ChatCursorAdapter(getContext(), chatCursor);
+        dataAdapter = new ChatCursorAdapter(getActivity(), chatCursor);
 
         listView = (ListView) getView().findViewById(R.id.chatList);
         listView.setAdapter(dataAdapter);
@@ -121,7 +115,7 @@ public class ChatFragment extends Fragment{
                 // Get the state's capital from this row in the database.
                 String countryCode =
                         cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
-                Toast.makeText(getContext(),
+                Toast.makeText(getActivity(),
                         countryCode, Toast.LENGTH_SHORT).show();
             }
         });
@@ -177,11 +171,11 @@ public class ChatFragment extends Fragment{
     }
 
     private void sendMsg(byte[] msg){
-        new SmsHelper(getContext()).send(phone, msg);
+        new SmsHelper(getActivity()).send(phone, msg);
     }
 
     private void sendMsg(String msg){
-        new SmsHelper(getContext()).send(phone, msg);
+        new SmsHelper(getActivity()).send(phone, msg);
     }
 
     private void scrollMyListViewToBottom() {

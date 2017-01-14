@@ -1,5 +1,8 @@
 package koncewicz.lukasz.komunikator;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 
 import info.guardianproject.cacheword.CacheWordHandler;
@@ -10,12 +13,12 @@ import koncewicz.lukasz.komunikator.utils.RsaHelper;
 import koncewicz.lukasz.komunikator.utils.hee;
 
 import net.sqlcipher.database.SQLiteDatabase;
-import android.support.v4.app.FragmentActivity;
+
 import android.util.Log;
 
 import java.security.KeyPair;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
     // our handler does all the work in talking to the CacheWordService
     private CacheWordHandler mCacheWord;
@@ -29,19 +32,13 @@ public class MainActivity extends FragmentActivity {
         initializeKeyPair();
 
         setContentView(R.layout.activity_main);
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) return;
 
-            UsersFragment firstFragment = new UsersFragment();
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
 
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            firstFragment.setArguments(getIntent().getExtras());
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, firstFragment).commit();
-        }
-        hee.tere(getBaseContext());
+        UsersFragment usersFragment = new UsersFragment();
+        ft.replace(R.id.fragment_container, usersFragment);
+        ft.commit();
     }
 
     private void openDatabase(){
