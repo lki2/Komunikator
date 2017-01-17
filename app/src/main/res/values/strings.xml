@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Komunikator</string>
+
+    <!-- Show QR Code Fragment -->
+    <string name="hint_my_username">Moja nazwa użytkownika</string>
+    <string name="hint_my_phone">Mój numer telefonu</string>
+    <string name="invalid_phone">Nieprawidłowy numer</string>
+    <string name="bt_generate">Wygeneruj</string>
+    <string name="qr_code">QR code</string>
+    <string name="country_code">+48</string>
+
+
 </resources>

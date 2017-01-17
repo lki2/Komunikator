@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,6 +20,7 @@ import android.widget.ListView;
 import net.sqlcipher.Cursor;
 
 import koncewicz.lukasz.komunikator.add_user.AddUserFragment;
+import koncewicz.lukasz.komunikator.add_user.ShowQrFragment;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
@@ -121,9 +125,45 @@ public class UsersFragment extends Fragment{
         fragmentTransaction.commitAllowingStateLoss();
     }
 
+    private void showQr(){
+        ShowQrFragment firstFragment = new ShowQrFragment();
+
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, firstFragment, "dds");
+        fragmentTransaction.addToBackStack("dds");
+        fragmentTransaction.commitAllowingStateLoss();
+    }
+
     private void refreshList(){
         usersCursor.close();
         usersCursor = dbAdapter.fetchUsers();
         dataAdapter.swapCursor(usersCursor);
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        // TODO Add your menu entries here
+        inflater.inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.showQr:
+                showQr();
+                break;
+
+            case R.id.refresh:
+                break;
+        }
+        return true;
+
     }
 }
