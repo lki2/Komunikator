@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.fragments;
+package koncewicz.lukasz.komunikator.database;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,11 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import koncewicz.lukasz.komunikator.R;
-import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
-public class UsersCursorAdapter extends CursorAdapter {
+public class ContactsCursorAdapter extends CursorAdapter {
 
-    public UsersCursorAdapter(Context context, Cursor cursor) {
+    public ContactsCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }
 
@@ -33,7 +32,7 @@ public class UsersCursorAdapter extends CursorAdapter {
 
         LinearLayout root = (LinearLayout) view;
 
-        root.setGravity(Gravity.LEFT);
+        root.setGravity(Gravity.START);
         root.setPadding(10, 5, 50, 5);
         view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.foreign_msg_bg));
 

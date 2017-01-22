@@ -8,9 +8,8 @@ import android.os.Bundle;
 import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.KeyPOJO;
-import koncewicz.lukasz.komunikator.fragments.UsersFragment;
-import koncewicz.lukasz.komunikator.utils.RsaHelper;
-import koncewicz.lukasz.komunikator.utils.hee;
+import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
+import koncewicz.lukasz.komunikator.utils.RsaUtils;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
@@ -36,8 +35,9 @@ public class MainActivity extends Activity {
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
 
-        UsersFragment usersFragment = new UsersFragment();
-        ft.replace(R.id.fragment_container, usersFragment);
+        ContactsFragment contactsFragment = new ContactsFragment();
+        ft.replace(R.id.fragment_container, contactsFragment);
+        ft.addToBackStack(ContactsFragment.TAG);
         ft.commit();
     }
 
@@ -54,10 +54,10 @@ public class MainActivity extends Activity {
     }
 
     private void initializeKeyPair(){
-        KeyPair kp = RsaHelper.generateKeyPair();
+        KeyPair kp = RsaUtils.generateKeyPair();
 
-        String publicKey = RsaHelper.keyToBase64(kp.getPublic());
-        String privateKey = RsaHelper.keyToBase64(kp.getPrivate());
+        String publicKey = RsaUtils.keyToBase64(kp.getPublic());
+        String privateKey = RsaUtils.keyToBase64(kp.getPrivate());
 
         DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(this);
         dbAdapter.addKey(new KeyPOJO(publicKey, 11L));

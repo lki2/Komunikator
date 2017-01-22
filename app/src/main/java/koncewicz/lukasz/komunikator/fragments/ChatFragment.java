@@ -21,10 +21,11 @@ import net.sqlcipher.Cursor;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import koncewicz.lukasz.komunikator.utils.RsaHelper;
+import koncewicz.lukasz.komunikator.database.ChatCursorAdapter;
+import koncewicz.lukasz.komunikator.utils.RsaUtils;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
-import koncewicz.lukasz.komunikator.utils.SmsHelper;
+import koncewicz.lukasz.komunikator.utils.SmsSender;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
 
@@ -70,14 +71,20 @@ public class ChatFragment extends Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        userId = getArguments().getLong(USER_ID, -1);
-        phone = getArguments().getString(PHONE);
-        username = getArguments().getString(USERNAME);
+        try {
+            Bundle bundle = getArguments();
+            userId = bundle.getLong(USER_ID, -1);
+            phone = bundle.getString(PHONE);
+            username = bundle.getString(USERNAME);
 
-        ((TextView)getView().findViewById(R.id.chatName)).setText(username + " (" + phone + ")");
+            TextView tvChatName = (TextView)getView().findViewById(R.id.chatName);
+            tvChatName.setText(username + " (" + phone + ")");
 
-        setListView();
-        setListener();
+            setListView();
+            setListener();
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -90,11 +97,11 @@ public class ChatFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        chatCursor.close();
+        //chatCursor.close();
         getActivity().unregisterReceiver(broadcastBufferReceiver);
     }
 
-    private void setListView() {
+    private void setListView() throws NullPointerException{
         dbAdapter = DatabaseAdapter.getInstance(getActivity());
         dbAdapter.open("123");
 
@@ -123,7 +130,7 @@ public class ChatFragment extends Fragment{
         scrollMyListViewToBottom();
     }
 
-    void setListener(){
+    void setListener() throws NullPointerException{
         Button btSend = (Button) getView().findViewById(R.id.btSend);
         btSend.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -135,7 +142,7 @@ public class ChatFragment extends Fragment{
 
                 addMsgToDb(msg);
                 encryptMsgAndSend(msg);
-                sendMsg(msg.getContent());
+                //sendMsg(msg.getContent());
             }
         });
     }
@@ -147,6 +154,7 @@ public class ChatFragment extends Fragment{
 
     private void refreshList(){
         chatCursor.close();
+        if (!dbAdapter.isOpen()) dbAdapter.open("123");//todo
         chatCursor = dbAdapter.fetchChat(userId);
         dataAdapter.swapCursor(chatCursor);
         scrollMyListViewToBottom();
@@ -157,25 +165,25 @@ public class ChatFragment extends Fragment{
             MessagePOJO encryptedMsg = msg;
             byte[] encryptedContent;
 
+            PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getKey(userId));
+            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getKey(12L)); //todo
 
-            PublicKey pubK = RsaHelper.publicKeyFromBase64(dbAdapter.getKey(11L));
-            PrivateKey privK = RsaHelper.privateKeyFromBase64(dbAdapter.getKey(11L));
-
-            encryptedContent = RsaHelper.RSAEncrypt(msg.getContent(), pubK);
-            encryptedContent = RsaHelper.RSAEncrypt(encryptedContent, privK);
+            encryptedContent = RsaUtils.RSAEncrypt(msg.getContent(), pubK);
+            encryptedContent = RsaUtils.RSAEncrypt(encryptedContent, privK);
 
             sendMsg(encryptedContent);
 
         }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private void sendMsg(byte[] msg){
-        new SmsHelper(getActivity()).send(phone, msg);
+        new SmsSender(getActivity()).send(phone, msg);
     }
 
     private void sendMsg(String msg){
-        new SmsHelper(getActivity()).send(phone, msg);
+        new SmsSender(getActivity()).send(phone, msg);
     }
 
     private void scrollMyListViewToBottom() {

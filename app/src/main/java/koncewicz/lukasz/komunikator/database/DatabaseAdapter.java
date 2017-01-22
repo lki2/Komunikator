@@ -3,11 +3,14 @@ package koncewicz.lukasz.komunikator.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
+
 import android.util.Log;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
+
+import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
 
 public class DatabaseAdapter {
 
@@ -89,11 +92,7 @@ public class DatabaseAdapter {
     }
 
     public boolean isOpen(){
-        if (mDb != null && mDb.isOpen()){
-            return true;
-        }else{
-            return false;
-        }
+        return mDb != null && mDb.isOpen();
     }
 
     public void open(String pass) throws SQLException {
@@ -151,11 +150,16 @@ public class DatabaseAdapter {
         return mDb.insert(TABLE_CHATS, null, initialValues);
     }
 
-    public long addUser(UserPOJO user) {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_PHONE, user.getPhone());
-        initialValues.put(COLUMN_USERNAME, user.getUsername());
-        return mDb.insert(TABLE_USERS, null, initialValues);
+    public long addContact(UserPOJO contact) {
+        if(findContact(contact.getPhone()) > 0){
+            // Contact exists
+            return -1;
+        }else{
+            ContentValues initialValues = new ContentValues();
+            initialValues.put(COLUMN_PHONE, contact.getPhone());
+            initialValues.put(COLUMN_USERNAME, contact.getUsername());
+            return mDb.insert(TABLE_USERS, null, initialValues);
+        }
     }
 
     public long addKey(KeyPOJO key){
@@ -176,8 +180,9 @@ public class DatabaseAdapter {
         }
     }
 
-    public long findUser(String phone){
-        Cursor mCursor = mDb.query(TABLE_USERS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_USERNAME}, COLUMN_PHONE + " = '" + phone + "'",
+    public long findContact(String phone){
+        String normalizedNumber = PhoneNumberUtils.normalizeNumber(phone);
+        Cursor mCursor = mDb.query(TABLE_USERS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_USERNAME}, COLUMN_PHONE + " = '" + normalizedNumber + "'",
                 null, null, null, null, null);
         if (mCursor != null && mCursor.getCount() >= 1) {
             mCursor.moveToFirst();
@@ -199,7 +204,7 @@ public class DatabaseAdapter {
         return mCursor;
     }
 
-    public Cursor fetchUsers() {
+    public Cursor fetchContacts() {
         Cursor mCursor = mDb.query(TABLE_USERS, new String[] {COLUMN_ID, COLUMN_PHONE,
                 COLUMN_USERNAME}, null, null, null, null, null);
 
@@ -228,17 +233,17 @@ public class DatabaseAdapter {
     }
 
     public void addUsers(){
-        addUser(new UserPOJO("737473606", "Maria"));
-        addUser(new UserPOJO("790561175", "Łukasz"));
-        addUser(new UserPOJO("phone3", "username3"));
+        addContact(new UserPOJO("737473606", "Maria"));
+        addContact(new UserPOJO("790561175", "Łukasz"));
+        addContact(new UserPOJO("phone3", "username3"));
 
-        addUser(new UserPOJO("phone4", "username4"));
-        addUser(new UserPOJO("phone5", "username5"));
-        addUser(new UserPOJO("phone6", "username6"));
-        addUser(new UserPOJO("phone7", "username7"));
-        addUser(new UserPOJO("phone8", "username8"));
-        addUser(new UserPOJO("phone9", "username9"));
-        addUser(new UserPOJO("phone10", "username10"));
+        addContact(new UserPOJO("phone4", "username4"));
+        addContact(new UserPOJO("phone5", "username5"));
+        addContact(new UserPOJO("phone6", "username6"));
+        addContact(new UserPOJO("phone7", "username7"));
+        addContact(new UserPOJO("phone8", "username8"));
+        addContact(new UserPOJO("phone9", "username9"));
+        addContact(new UserPOJO("phone10", "username10"));
         Log.d(TAG, "dodano uzytkownikow");
     }
 }

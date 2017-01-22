@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.fragments;
+package koncewicz.lukasz.komunikator.database;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -34,19 +34,19 @@ public class ChatCursorAdapter extends CursorAdapter {
 
         switch (cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS))){
             case "0":
-                root.setGravity(Gravity.RIGHT);
+                root.setGravity(Gravity.END);
                 root.setPadding(50, 5, 10, 5);
                 view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.failure_msg));
                 ((TextView)view.findViewById(R.id.msgText)).setTextColor(context.getResources().getColor(R.color.failureMsgFg));
                 break;
             case "1":
-                root.setGravity(Gravity.RIGHT);
+                root.setGravity(Gravity.END);
                 root.setPadding(50, 5, 10, 5);
                 view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.my_msg_bg));
 
                 break;
             case "2":
-                root.setGravity(Gravity.LEFT);
+                root.setGravity(Gravity.START);
                 root.setPadding(10, 5, 50, 5);
                 view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.foreign_msg_bg));
                 break;

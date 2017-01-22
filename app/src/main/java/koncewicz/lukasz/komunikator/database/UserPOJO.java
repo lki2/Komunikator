@@ -1,12 +1,14 @@
 package koncewicz.lukasz.komunikator.database;
 
+import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
+
 public class UserPOJO {
     
     private String phone;
     private String username;
     
     public UserPOJO(String phone, String username){
-        this.phone = phone;
+        this.phone = PhoneNumberUtils.normalizeNumber(phone);
         this.username = username;
     }
 

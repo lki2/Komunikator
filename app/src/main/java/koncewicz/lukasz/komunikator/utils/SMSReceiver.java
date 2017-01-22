@@ -10,6 +10,9 @@ import android.widget.Toast;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
 import koncewicz.lukasz.komunikator.database.UserPOJO;
@@ -54,15 +57,17 @@ public class SmsReceiver extends BroadcastReceiver
 
                 data = msgs[i].getUserData();
 
+
                 String content = "";
                 for(int index=0; index<data.length; ++index)
                 {
                     content += Character.toString((char)data[index]);
                 }
+
                 info += content;
 
                 String phone = msgs[i].getOriginatingAddress();
-                addMsgToDb(phone, content);
+                addMsgToDb(phone, content, data);
                 refreshView(phone);
             }
 
@@ -70,33 +75,36 @@ public class SmsReceiver extends BroadcastReceiver
         }
     }
 
-    private void addMsgToDb(String phone, String content){
+    private void addMsgToDb(String phone, String content, byte[] data){
         DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context);
-        if (dbAdapter.isOpen()){
-            long userId = dbAdapter.findUser(phone);
-            if(userId == -1){
-                UserPOJO user = new UserPOJO(phone, "nowy kontakt");
-                userId = dbAdapter.addUser(user);
-            }
-            if(userId != -1){
-                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
-                dbAdapter.addMsg(msg);
-            }
-        }else{
-            SQLiteDatabase.loadLibs(context);
-            dbAdapter.open("123");
 
-            long userId = dbAdapter.findUser(phone);
-            if(userId == -1){
-                UserPOJO user = new UserPOJO(phone, "nowy kontakt");
-                userId = dbAdapter.addUser(user);
-            }
-            if(userId != -1){
-                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
-                dbAdapter.addMsg(msg);
-            }
-            dbAdapter.close();
+        if (!dbAdapter.isOpen()) {
+            SQLiteDatabase.loadLibs(context);
+            dbAdapter.open("123"); //todo
         }
+
+        long userId = dbAdapter.findContact(phone);
+        if(userId == -1){
+            UserPOJO user = new UserPOJO(phone, "nowy kontakt");
+            userId = dbAdapter.addContact(user);
+        }
+
+        try {
+            PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getKey(userId));
+            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getKey(12L)); //todo
+
+            content = RsaUtils.RSADecrypt(data, pubK);
+            content = RsaUtils.RSADecrypt(content.getBytes(), privK);
+
+            MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
+            dbAdapter.addMsg(msg);
+
+        }catch (Exception e){
+
+        }
+
+        dbAdapter.close();
+
     }
 
     private void refreshView(String phone){

@@ -19,20 +19,19 @@ import android.widget.ListView;
 
 import net.sqlcipher.Cursor;
 
-import koncewicz.lukasz.komunikator.add_user.AddUserFragment;
-import koncewicz.lukasz.komunikator.add_user.ShowQrFragment;
+import koncewicz.lukasz.komunikator.database.ContactsCursorAdapter;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
-public class UsersFragment extends Fragment{
+public class ContactsFragment extends Fragment implements View.OnClickListener{
 
-    private static final String TAG = UsersFragment.class.getName();
+    public static final String TAG = ContactsFragment.class.getName();
 
     DatabaseAdapter dbAdapter;
     Cursor usersCursor;
 
-    UsersCursorAdapter dataAdapter;
+    ContactsCursorAdapter dataAdapter;
     ListView listView;
 
     private BroadcastReceiver broadcastBufferReceiver = new BroadcastReceiver() {
@@ -46,20 +45,14 @@ public class UsersFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
-        return inflater.inflate(R.layout.fragment_users, container, false);
+        return inflater.inflate(R.layout.fragment_contacts, container, false);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.w(TAG, "onStart()");
-        getView().findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.e(TAG, dbAdapter.getKey(11L));
-                addUser();
-            }
-        });
+        getView().findViewById(R.id.fab).setOnClickListener(this);
         users();
         //dbAdapter.addUsers();
     }
@@ -76,7 +69,7 @@ public class UsersFragment extends Fragment{
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause()");
-        usersCursor.close();
+        //usersCursor.close();
         getActivity().unregisterReceiver(broadcastBufferReceiver);
     }
 
@@ -85,8 +78,8 @@ public class UsersFragment extends Fragment{
         dbAdapter.open("123");
         //dbAdapter.addUsers();
 
-        usersCursor = dbAdapter.fetchUsers();
-        dataAdapter = new UsersCursorAdapter(getActivity(), usersCursor);
+        usersCursor = dbAdapter.fetchContacts();
+        dataAdapter = new ContactsCursorAdapter(getActivity(), usersCursor);
 
         listView = (ListView) getView().findViewById(R.id.usersList);
         listView.setAdapter(dataAdapter);
@@ -117,7 +110,7 @@ public class UsersFragment extends Fragment{
     }
 
     private void addUser(){
-        AddUserFragment firstFragment = new AddUserFragment();
+        QrScannerFragment firstFragment = new QrScannerFragment();
 
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, firstFragment, "d");
@@ -136,7 +129,8 @@ public class UsersFragment extends Fragment{
 
     private void refreshList(){
         usersCursor.close();
-        usersCursor = dbAdapter.fetchUsers();
+        if (!dbAdapter.isOpen()) dbAdapter.open("123");//todo
+        usersCursor = dbAdapter.fetchContacts();
         dataAdapter.swapCursor(usersCursor);
     }
 
@@ -165,5 +159,13 @@ public class UsersFragment extends Fragment{
         }
         return true;
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.fab){
+            Log.e(TAG, dbAdapter.getKey(11L));
+            addUser();
+        }
     }
 }

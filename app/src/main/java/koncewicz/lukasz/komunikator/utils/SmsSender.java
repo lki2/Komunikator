@@ -10,16 +10,16 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
-public class SmsHelper {
+public class SmsSender {
 
-    Context context;
-    private final static String TAG = SmsHelper.class.getName();
+    private Context context;
+    private final static String TAG = SmsSender.class.getName();
 
     private final static String SMS_SENT = "SMS_SENT";
     private final static String SMS_DELIVERED = "SMS_DELIVERED";
     private final static short SMS_PORT = 80;
 
-    public SmsHelper(Context context){
+    public SmsSender(Context context){
         this.context = context;
     }
 

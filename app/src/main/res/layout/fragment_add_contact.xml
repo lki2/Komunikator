@@ -7,8 +7,6 @@
     android:orientation="vertical"
     android:padding="10dp" >
 
-
-
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -17,14 +15,22 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp" >
 
-        <TextView
-            android:text="@string/my_profile"
-            android:layout_width="match_parent"
+        <!-- Phone  -->
+
+        <EditText
+            android:id="@+id/et_phone"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/textView"
-            android:gravity="center"
+            android:layout_marginBottom="10dp"
+            android:inputType="phone"
             android:padding="10dp"
-            android:textSize="30sp"/>
+            android:textColor="@color/input_login"
+            android:textColorHint="@color/input_login_hint"
+            android:maxLines="1"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
 
         <!-- Username -->
 
@@ -34,50 +40,39 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:background="@color/white"
-            android:hint="@string/hint_username"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:textColor="@color/input_login"
             android:textColorHint="@color/input_login_hint"
-            android:maxLines="1"
-            />
+            android:maxLines="1" />
 
-        <!-- Phone  -->
-
-        <EditText
-            android:id="@+id/et_phone"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:hint="@string/hint_phone"
-            android:inputType="phone"
-            android:padding="10dp"
-            android:textColor="@color/input_login"
-            android:textColorHint="@color/input_login_hint"
-            android:maxLines="1"
-            />
-
-        <!-- Generate Button -->
+        <!-- Add Contact Button -->
 
         <Button
-            android:id="@+id/bt_generate"
+            android:id="@+id/bt_add_contact"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dip"
-            android:text="@string/bt_generate"
+            android:text="@string/bt_add_contact"
             android:textColor="@color/bt_generate"
-            android:background="@color/bt_generate_bg"
-            />
+            android:background="@color/bt_generate_bg" />
 
-        <!-- QR Code -->
+        <!-- Public Key -->
 
-        <ImageView
+        <TextView
+            android:text="@string/public_key"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/img_result_qr"
-            android:contentDescription="@string/qr_code"
-            />
+            android:id="@+id/tv_key_label" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_key" />
+
     </LinearLayout>
+
+
+
 
 </LinearLayout>

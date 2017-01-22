@@ -20,7 +20,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-public class RsaHelper {
+public class RsaUtils {
     private static final String algorithm = "RSA";
 
     public static KeyPair generateKeyPair() {

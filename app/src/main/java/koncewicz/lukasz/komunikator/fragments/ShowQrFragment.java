@@ -1,4 +1,4 @@
-package koncewicz.lukasz.komunikator.add_user;
+package koncewicz.lukasz.komunikator.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -18,6 +18,9 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
@@ -27,16 +30,16 @@ import static android.graphics.Color.WHITE;
 public class ShowQrFragment extends Fragment {
     private static final String TAG = ShowQrFragment.class.getName();
 
-    private static final int WIDTH = 512;
-    private static final int HEIGHT = 512;
+    private static final int WIDTH = 1024;
+    private static final int HEIGHT = 1024;
 
     private static final String PREFS = "koncewicz.lukasz.komunikator";
     private static final String PREFS_USERNAME = "USERNAME";
     private static final String PREFS_PHONE = "PHONE";
 
-    private static final String QR_USERNAME = "USERNAME:";
-    private static final String QR_PHONE = "PHONE:";
-    private static final String QR_KEY = "KEY:";
+    public static final String QR_USERNAME = "username";
+    public static final String QR_PHONE = "phone";
+    public static final String QR_KEY = "key";
 
     private ImageView imageView;
     private EditText etUsername;
@@ -48,8 +51,8 @@ public class ShowQrFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_show_qr, container, false);
-        etUsername = (EditText) view.findViewById(R.id.et_my_username);
-        etPhone = (EditText) view.findViewById(R.id.et_my_phone);
+        etUsername = (EditText) view.findViewById(R.id.et_username);
+        etPhone = (EditText) view.findViewById(R.id.et_phone);
         etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         imageView = (ImageView) view.findViewById(R.id.img_result_qr);
 
@@ -65,13 +68,12 @@ public class ShowQrFragment extends Fragment {
         view.findViewById(R.id.bt_generate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.getId() == R.id.bt_generate){
-                    SSshowQr();
-                }
+                showQr();
             }
         });
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -104,10 +106,10 @@ public class ShowQrFragment extends Fragment {
         etPhone.setText(phone);
         etUsername.setText(username);
         String key = dbAdapter.getKey(11L); //todo key id
-        showQr(username, phone, key);
+        setQr(username, phone, key);
     }
 
-    private void SSshowQr(){
+    private void showQr(){
         String username = etUsername.getText().toString();
         String phone = etPhone.getText().toString();
 
@@ -118,13 +120,21 @@ public class ShowQrFragment extends Fragment {
 
         String key = dbAdapter.getKey(11L); //todo key id
         saveToPrefs(username, phone);
-        showQr(username, phone, key);
+        setQr(username, phone, key);
     }
 
-    private void showQr(String username, String phone, String key){
-        String qrString = QR_KEY + key + QR_PHONE + phone + QR_USERNAME + username;
-        Bitmap bitmap = encodeAsBitmap(qrString);
-        imageView.setImageBitmap(bitmap);
+    private void setQr(String username, String phone, String key){
+        try {
+            JSONObject json = new JSONObject();
+            json.put(QR_KEY, key);
+            json.put(QR_PHONE, phone);
+            json.put(QR_USERNAME, username);
+
+            Bitmap bitmap = encodeAsBitmap(json.toString());
+            imageView.setImageBitmap(bitmap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isValidPhone(String phone) {
