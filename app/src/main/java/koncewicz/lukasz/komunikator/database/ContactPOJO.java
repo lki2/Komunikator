@@ -2,21 +2,21 @@ package koncewicz.lukasz.komunikator.database;
 
 import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
 
-public class UserPOJO {
+public class ContactPOJO {
     
     private String phone;
-    private String username;
+    private String name;
     
-    public UserPOJO(String phone, String username){
+    public ContactPOJO(String phone, String name){
         this.phone = PhoneNumberUtils.normalizeNumber(phone);
-        this.username = username;
+        this.name = name;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 }

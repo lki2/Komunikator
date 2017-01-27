@@ -2,8 +2,8 @@ package koncewicz.lukasz.komunikator.database;
 
 public class MessagePOJO {
 
-    public long getUserId(){
-        return userId;
+    public long getContactId(){
+        return contactId;
     };
 
     public String getContent() {
@@ -37,13 +37,13 @@ public class MessagePOJO {
         }
     }
 
-    private long userId;
+    private long contactId;
     private String content;
     private Status status;
     private String datetime;
 
-    public MessagePOJO(long userId ,String content, Status status){
-        this.userId = userId;
+    public MessagePOJO(long contactId, String content, Status status){
+        this.contactId = contactId;
         this.content = content;
         this.status = status;
     }

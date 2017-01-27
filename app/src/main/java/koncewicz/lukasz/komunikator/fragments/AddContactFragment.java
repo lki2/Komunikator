@@ -13,7 +13,7 @@ import android.widget.Toast;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.KeyPOJO;
-import koncewicz.lukasz.komunikator.database.UserPOJO;
+import koncewicz.lukasz.komunikator.database.ContactPOJO;
 
 public class AddContactFragment extends Fragment implements View.OnClickListener
 {
@@ -51,9 +51,9 @@ public class AddContactFragment extends Fragment implements View.OnClickListener
         String username = etUsername.getText().toString();
 
         DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(getActivity());
-        Long userId = dbAdapter.addContact(new UserPOJO(phone, username));
+        Long userId = dbAdapter.addContact(new ContactPOJO(phone, username));
         if (userId > 0){
-            dbAdapter.addKey(new KeyPOJO(key, userId));
+            dbAdapter.addContactKey(new KeyPOJO(key, userId));
         }else{//todo update key
             Toast.makeText(getActivity(), "Kontakt już istnieje", Toast.LENGTH_LONG).show();
         }

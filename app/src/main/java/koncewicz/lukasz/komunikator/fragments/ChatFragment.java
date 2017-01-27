@@ -97,7 +97,7 @@ public class ChatFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        //chatCursor.close();
+        chatCursor.close();
         getActivity().unregisterReceiver(broadcastBufferReceiver);
     }
 
@@ -165,8 +165,8 @@ public class ChatFragment extends Fragment{
             MessagePOJO encryptedMsg = msg;
             byte[] encryptedContent;
 
-            PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getKey(userId));
-            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getKey(12L)); //todo
+            PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getContactKey(userId));
+            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
 
             encryptedContent = RsaUtils.RSAEncrypt(msg.getContent(), pubK);
             encryptedContent = RsaUtils.RSAEncrypt(encryptedContent, privK);

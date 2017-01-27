@@ -105,8 +105,8 @@ public class ShowQrFragment extends Fragment {
         }
         etPhone.setText(phone);
         etUsername.setText(username);
-        String key = dbAdapter.getKey(11L); //todo key id
-        setQr(username, phone, key);
+        String publicKey = dbAdapter.getPublicKey();
+        setQr(username, phone, publicKey);
     }
 
     private void showQr(){
@@ -118,9 +118,9 @@ public class ShowQrFragment extends Fragment {
             return;
         }
 
-        String key = dbAdapter.getKey(11L); //todo key id
+        String publicKey = dbAdapter.getPublicKey();
         saveToPrefs(username, phone);
-        setQr(username, phone, key);
+        setQr(username, phone, publicKey);
     }
 
     private void setQr(String username, String phone, String key){

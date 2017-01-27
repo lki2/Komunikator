@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -13,20 +13,33 @@
 
         <ListView android:id="@+id/usersList"
             android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
-            android:background="@drawable/chat_bg"
-            android:divider="@null"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:background="@drawable/chat_bg"/>
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/add_contact_fab"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:src="@drawable/ic_add"
+            app:backgroundTint="@color/divider"
+            app:layout_behavior="koncewicz.lukasz.komunikator.utils.FAB_Float_on_Scroll"/>
+    </android.support.design.widget.CoordinatorLayout>
+<!--
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/add_contact_fab"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+
+        android:layout_gravity="end|bottom"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/my_msg_bg"
-        app:layout_anchor="@id/usersList"
-        app:layout_anchorGravity="bottom|right|end"/>
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/divider"
+        app:layout_behavior="koncewicz.lukasz.komunikator.utils.FAB_Float_on_Scroll"/> !-->
 
-</android.support.design.widget.CoordinatorLayout>
+
+</LinearLayout>
