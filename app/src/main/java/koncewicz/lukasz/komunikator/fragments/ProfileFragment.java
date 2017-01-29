@@ -5,8 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,21 +24,23 @@ import org.json.JSONObject;
 
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
+import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
 
 import static android.graphics.Color.BLACK;
 import static android.graphics.Color.WHITE;
 
-public class ShowQrFragment extends Fragment {
-    private static final String TAG = ShowQrFragment.class.getName();
+public class ProfileFragment extends Fragment {
+    //private static final String TAG = ProfileFragment.class.getName();
 
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 1024;
 
     private static final String PREFS = "koncewicz.lukasz.komunikator";
-    private static final String PREFS_USERNAME = "USERNAME";
+    private static final String PREFS_NAME = "NAME";
     private static final String PREFS_PHONE = "PHONE";
+    private static final String PREFS_KEY = "PHONE";
 
-    public static final String QR_USERNAME = "username";
+    public static final String QR_NAME = "name";
     public static final String QR_PHONE = "phone";
     public static final String QR_KEY = "key";
 
@@ -45,13 +48,10 @@ public class ShowQrFragment extends Fragment {
     private EditText etUsername;
     private EditText etPhone;
 
-    DatabaseAdapter dbAdapter;
-    SharedPreferences prefs;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_show_qr, container, false);
-        etUsername = (EditText) view.findViewById(R.id.et_username);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        etUsername = (EditText) view.findViewById(R.id.et_name);
         etPhone = (EditText) view.findViewById(R.id.et_phone);
         etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         imageView = (ImageView) view.findViewById(R.id.img_result_qr);
@@ -68,77 +68,75 @@ public class ShowQrFragment extends Fragment {
         view.findViewById(R.id.bt_generate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showQr();
+                doJob();
             }
         });
         return view;
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
-        dbAdapter = DatabaseAdapter.getInstance(getActivity());
-        prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        retrieveFromPrefs();
+        showToolbar();
+        getFromPrefs();
     }
 
-    private void saveToPrefs(String username, String phone){
-        if (prefs != null) {
-            prefs.edit().putString(PREFS_USERNAME, username).apply();
-            prefs.edit().putString(PREFS_PHONE, phone).apply();
-        }else{
-            Log.e(TAG, "failed saveToPrefs: prefs == null");
-        }
+    private void putToPrefs(String name, String phone, String key){
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        prefs.edit().putString(PREFS_NAME, name).apply();
+        prefs.edit().putString(PREFS_PHONE, phone).apply();
+        prefs.edit().putString(PREFS_KEY, key).apply();
     }
 
-    private void retrieveFromPrefs(){
-        if (prefs == null) {
-            Log.e(TAG, "failed retrieveFromPrefs: prefs == null");
-            return;
-        }
-        String username = prefs.getString(PREFS_USERNAME, null);
+    private void getFromPrefs(){
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String name = prefs.getString(PREFS_NAME, null);
         String phone = prefs.getString(PREFS_PHONE, null);
+        String publicKey = prefs.getString(PREFS_KEY, null);
 
-        if (phone == null || username == null) {
-           return;
+        if (phone != null && name != null && publicKey != null) {
+            etPhone.setText(phone);
+            etUsername.setText(name);
+            showQr(name, phone, publicKey);
         }
-        etPhone.setText(phone);
-        etUsername.setText(username);
-        String publicKey = dbAdapter.getPublicKey();
-        setQr(username, phone, publicKey);
     }
 
-    private void showQr(){
+    private void showToolbar(){
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.my_profile);
+        actionBar.setSubtitle("");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+    }
+
+    private void doJob(){
         String username = etUsername.getText().toString();
         String phone = etPhone.getText().toString();
 
-        if(!isValidPhone(phone)){
+        if(!PhoneNumberUtils.isValidNumber(phone)){
             etPhone.setError(getString(R.string.invalid_phone));
             return;
         }
 
+        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(getActivity());
         String publicKey = dbAdapter.getPublicKey();
-        saveToPrefs(username, phone);
-        setQr(username, phone, publicKey);
+        putToPrefs(username, phone, publicKey);
+        showQr(username, phone, publicKey);
     }
 
-    private void setQr(String username, String phone, String key){
+    private void showQr(String username, String phone, String key){
         try {
             JSONObject json = new JSONObject();
             json.put(QR_KEY, key);
             json.put(QR_PHONE, phone);
-            json.put(QR_USERNAME, username);
+            json.put(QR_NAME, username);
 
             Bitmap bitmap = encodeAsBitmap(json.toString());
             imageView.setImageBitmap(bitmap);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    private boolean isValidPhone(String phone) {
-        return android.util.Patterns.PHONE.matcher(phone).matches();
     }
 
     Bitmap encodeAsBitmap(String str) {

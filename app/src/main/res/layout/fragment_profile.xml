@@ -2,12 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_login"
+    android:background="@color/bg_main"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="10dp" >
-
-
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -17,19 +15,9 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp" >
 
-        <TextView
-            android:text="@string/my_profile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textSize="30sp"/>
-
-        <!-- Username -->
-
+        <!-- Name -->
         <EditText
-            android:id="@+id/et_username"
+            android:id="@+id/et_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -42,8 +30,7 @@
             android:maxLines="1"
             />
 
-        <!-- Phone  -->
-
+        <!-- Phone -->
         <EditText
             android:id="@+id/et_phone"
             android:layout_width="fill_parent"
@@ -59,19 +46,17 @@
             />
 
         <!-- Generate Button -->
-
         <Button
             android:id="@+id/bt_generate"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dip"
             android:text="@string/bt_generate"
-            android:textColor="@color/bt_generate"
+            android:textColor="@color/bg_main"
             android:background="@color/bt_generate_bg"
             />
 
         <!-- QR Code -->
-
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

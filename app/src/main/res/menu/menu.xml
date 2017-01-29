@@ -1,4 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/showQr" android:title="Wyświetl " />
-    <item android:id="@+id/refresh" android:title="Refresh" />
+    <item android:id="@+id/showProfile" android:title="@string/show_profile" />
+    <item android:id="@+id/addContact" android:title="@string/add_contact" />
 </menu>

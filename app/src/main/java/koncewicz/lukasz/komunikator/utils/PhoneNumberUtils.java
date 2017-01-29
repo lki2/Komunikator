@@ -24,4 +24,8 @@ public class PhoneNumberUtils {
         }
         return sb.toString();
     }
+
+    public static boolean isValidNumber(String phone) {
+        return android.util.Patterns.PHONE.matcher(phone).matches();
+    }
 }

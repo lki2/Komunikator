@@ -15,18 +15,18 @@ import java.security.PublicKey;
 
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
-import koncewicz.lukasz.komunikator.database.UserPOJO;
+import koncewicz.lukasz.komunikator.database.ContactPOJO;
 
 public class SmsReceiver extends BroadcastReceiver
 {
     private final static String TAG = SmsReceiver.class.getName();
-    public static final String BROADCAST_BUFFER_SEND_CODE = "koncewicz.lukasz.komunikator.utils.SEND_CODE";
+    public static final String BROADCAST_SEND_CODE = "koncewicz.lukasz.komunikator.utils.SEND_CODE";
 
     Context context;
 
     //todo szyfrowanie ++
     //todo exceptions in RSA cipher
-    //todo dodawanie kontaktu
+    //todo dodawanie kontaktu ++
     //todo edycja kontaktu
     //todo usuwanie wiadomosci
     //todo status wiadomosci
@@ -57,17 +57,15 @@ public class SmsReceiver extends BroadcastReceiver
 
                 data = msgs[i].getUserData();
 
-
                 String content = "";
-                for(int index=0; index<data.length; ++index)
-                {
-                    content += Character.toString((char)data[index]);
+                for (byte aData : data) {
+                    content += Character.toString((char) aData);
                 }
 
                 info += content;
 
                 String phone = msgs[i].getOriginatingAddress();
-                addMsgToDb(phone, content, data);
+                addMsgToDb(phone, data);
                 refreshView(phone);
             }
 
@@ -75,7 +73,7 @@ public class SmsReceiver extends BroadcastReceiver
         }
     }
 
-    private void addMsgToDb(String phone, String content, byte[] data){
+    private void addMsgToDb(String phone, byte[] data){
         DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context);
 
         if (!dbAdapter.isOpen()) {
@@ -83,32 +81,29 @@ public class SmsReceiver extends BroadcastReceiver
             dbAdapter.open("123"); //todo
         }
 
-        long userId = dbAdapter.findContact(phone);
+        long userId = dbAdapter.getContact(phone);
         if(userId == -1){
-            UserPOJO user = new UserPOJO(phone, "nowy kontakt");
-            userId = dbAdapter.addContact(user);
-        }
-
-        try {
-            PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getKey(userId));
-            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getKey(12L)); //todo
-
-            content = RsaUtils.RSADecrypt(data, pubK);
-            content = RsaUtils.RSADecrypt(content.getBytes(), privK);
-
-            MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
+            ContactPOJO contact = new ContactPOJO(phone, "nowy kontakt");
+            MessagePOJO msg = new MessagePOJO(userId, data.toString(), MessagePOJO.Status.RECEIVED);
             dbAdapter.addMsg(msg);
 
-        }catch (Exception e){
+        }else {
+            try {
+                PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getContactKey(userId));
+                PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
 
+                String content = new String(RsaUtils.RSADecrypt(RsaUtils.RSADecrypt(data, pubK), privK));
+                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
+                dbAdapter.addMsg(msg);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
-
         dbAdapter.close();
-
     }
 
     private void refreshView(String phone){
-        Intent updatePosIntent = new Intent(BROADCAST_BUFFER_SEND_CODE);
+        Intent updatePosIntent = new Intent(BROADCAST_SEND_CODE);
         updatePosIntent.putExtra("PHONE", phone);
         context.sendBroadcast(updatePosIntent);
     }

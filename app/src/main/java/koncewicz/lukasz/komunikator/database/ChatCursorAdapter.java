@@ -2,6 +2,7 @@ package koncewicz.lukasz.komunikator.database;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import koncewicz.lukasz.komunikator.R;
-import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
 public class ChatCursorAdapter extends CursorAdapter {
     public ChatCursorAdapter(Context context, Cursor cursor) {
@@ -22,7 +22,7 @@ public class ChatCursorAdapter extends CursorAdapter {
     // you don't bind any data to the view at this point.
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.chat_list_item, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.message, parent, false);
     }
 
     // The bindView method is used to bind all data to a given view
@@ -31,34 +31,36 @@ public class ChatCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         LinearLayout root = (LinearLayout) view;
-
-        switch (cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS))){
-            case "0":
+        int status = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS));
+        switch (MessagePOJO.Status.fromInt(status)){
+            case FAILURE:
                 root.setGravity(Gravity.END);
                 root.setPadding(50, 5, 10, 5);
-                view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.failure_msg));
-                ((TextView)view.findViewById(R.id.msgText)).setTextColor(context.getResources().getColor(R.color.failureMsgFg));
+                view.findViewById(R.id.messageBox).setBackground(ContextCompat.getDrawable(context,
+                        R.drawable.failure_msg));
+                ((TextView)view.findViewById(R.id.msg_content)).setTextColor(context.getResources().getColor(R.color.failureMsgFg));
                 break;
-            case "1":
+            case SENT:
                 root.setGravity(Gravity.END);
                 root.setPadding(50, 5, 10, 5);
-                view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.my_msg_bg));
-
+                view.findViewById(R.id.messageBox).setBackground(ContextCompat.getDrawable(context,
+                        R.drawable.my_msg_bg));
                 break;
-            case "2":
+            case RECEIVED:
                 root.setGravity(Gravity.START);
                 root.setPadding(10, 5, 50, 5);
-                view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.foreign_msg_bg));
+                view.findViewById(R.id.messageBox).setBackground(ContextCompat.getDrawable(context,
+                        R.drawable.foreign_msg_bg));
                 break;
         }
 
-        TextView tvContinent = (TextView) view.findViewById(R.id.msgText);
-        TextView tvRegion = (TextView) view.findViewById(R.id.msgTime);
+        TextView tvContent = (TextView) view.findViewById(R.id.msg_content);
+        TextView tvTime = (TextView) view.findViewById(R.id.msg_time);
 
         String continent = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
         String region = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_DATETIME));
 
-        tvContinent.setText(continent);
-        tvRegion.setText(region);
+        tvContent.setText(continent);
+        tvTime.setText(region);
     }
 }

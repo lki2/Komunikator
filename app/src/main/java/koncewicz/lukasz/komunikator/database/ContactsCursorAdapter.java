@@ -22,7 +22,7 @@ public class ContactsCursorAdapter extends CursorAdapter {
     // you don't bind any data to the view at this point.
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.chat_list_item, parent, false);
+        return LayoutInflater.from(context).inflate(R.layout.message, parent, false);
     }
 
     // The bindView method is used to bind all data to a given view
@@ -34,10 +34,9 @@ public class ContactsCursorAdapter extends CursorAdapter {
 
         root.setGravity(Gravity.START);
         root.setPadding(10, 5, 50, 5);
-        view.findViewById(R.id.messageBox).setBackgroundDrawable(context.getResources().getDrawable( R.drawable.foreign_msg_bg));
 
-        TextView tvContinent = (TextView) view.findViewById(R.id.msgText);
-        TextView tvRegion = (TextView) view.findViewById(R.id.msgTime);
+        TextView tvContinent = (TextView) view.findViewById(R.id.msg_content);
+        TextView tvRegion = (TextView) view.findViewById(R.id.msg_time);
 
         String continent = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_NAME));
         String region = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_PHONE));

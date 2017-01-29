@@ -36,7 +36,6 @@ public class QrScannerFragment extends Fragment implements ZXingScannerView.Resu
 
     @Override
     public void handleResult(Result rawResult) {
-
         try {
             Bundle bundle = parseQr(rawResult.getText());
             showAddUserFragment(bundle);
@@ -49,13 +48,13 @@ public class QrScannerFragment extends Fragment implements ZXingScannerView.Resu
     private Bundle parseQr(String qrContent) throws JSONException {
         Bundle bundle = new Bundle();
         JSONObject reader = new JSONObject(qrContent);
-        String key = reader.getString(ShowQrFragment.QR_KEY);
-        String phone = reader.getString(ShowQrFragment.QR_PHONE);
-        String username = reader.getString(ShowQrFragment.QR_USERNAME);
+        String key = reader.getString(ProfileFragment.QR_KEY);
+        String phone = reader.getString(ProfileFragment.QR_PHONE);
+        String username = reader.getString(ProfileFragment.QR_NAME);
 
-        bundle.putString(ShowQrFragment.QR_KEY, key);
-        bundle.putString(ShowQrFragment.QR_PHONE, phone);
-        bundle.putString(ShowQrFragment.QR_USERNAME, username);
+        bundle.putString(ProfileFragment.QR_KEY, key);
+        bundle.putString(ProfileFragment.QR_PHONE, phone);
+        bundle.putString(ProfileFragment.QR_NAME, username);
 
         return bundle;
     }

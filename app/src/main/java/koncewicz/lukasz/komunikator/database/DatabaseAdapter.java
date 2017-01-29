@@ -69,7 +69,7 @@ public class DatabaseAdapter {
                     COLUMN_DATETIME + DATETIME_TYPE + " DEFAULT CURRENT_TIMESTAMP," +
                     COLUMN_CONTACT_ID + INTEGER_TYPE + "," +
                     COLUMN_CONTENT + TEXT_TYPE + "," +
-                    COLUMN_STATUS + TEXT_TYPE + "," +
+                    COLUMN_STATUS + INTEGER_TYPE + "," +
     " FOREIGN KEY(" + COLUMN_CONTACT_ID + ") REFERENCES " + TABLE_CONTACTS + "(" + COLUMN_ID + "))";
 
     private static final String SQL_CREATE_TABLE_KEYS =
@@ -300,7 +300,7 @@ public class DatabaseAdapter {
      */
     private boolean checkIfContactExists(Long contactId){
         Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
-                COLUMN_CONTACT_ID + " = '" + contactId + "'", null, null, null, null, null);
+                COLUMN_ID + " = '" + contactId + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
             mCursor.close();
             return true;

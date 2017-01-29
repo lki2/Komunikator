@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +21,7 @@ import android.widget.ListView;
 
 import net.sqlcipher.Cursor;
 
+import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.database.ContactsCursorAdapter;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
@@ -36,7 +39,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
 
     private BroadcastReceiver broadcastBufferReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent bufferIntent) {
+        public void onReceive(Context context, Intent intent) {
             refreshList();
         }
     };
@@ -45,41 +48,37 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView()");
-        return inflater.inflate(R.layout.fragment_contacts, container, false);
+        setHasOptionsMenu(true);
+        View view = inflater.inflate(R.layout.fragment_contacts, container, false);
+        view.findViewById(R.id.add_contact_fab).setOnClickListener(this);
+        listView = (ListView) view.findViewById(R.id.usersList);
+        return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
         Log.w(TAG, "onStart()");
-        getView().findViewById(R.id.add_contact_fab).setOnClickListener(this);
+        showToolbar();
         showContacts();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.w(TAG, "onResume()");
         getActivity().registerReceiver(broadcastBufferReceiver,
-                new IntentFilter(SmsReceiver.BROADCAST_BUFFER_SEND_CODE));
+                new IntentFilter(SmsReceiver.BROADCAST_SEND_CODE));
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause()");
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop()");
         getActivity().unregisterReceiver(broadcastBufferReceiver);
         contactsCursor.close();
     }
 
     private void showContacts() {
-        dbAdapter = DatabaseAdapter.getInstance(getActivity().getBaseContext());
-        dbAdapter.open("123");
+        DatabaseAdapter dbAdapter = ((MainActivity) getActivity()).getOpenDatabase();
 
         contactsCursor = dbAdapter.fetchContacts();
         contactsAdapter = new ContactsCursorAdapter(getActivity(), contactsCursor);
 
-        listView = (ListView) getView().findViewById(R.id.usersList);
         listView.setAdapter(contactsAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -101,62 +100,67 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
         fragmentTransaction.replace(R.id.fragment_container, chatFragment, "dd");
         fragmentTransaction.addToBackStack("dd");
         fragmentTransaction.commitAllowingStateLoss();
-        contactsCursor.close();
     }
 
-    private void addUser(){
+    private void addContact(){
         QrScannerFragment firstFragment = new QrScannerFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, firstFragment, "d");
         fragmentTransaction.addToBackStack("d");
         fragmentTransaction.commitAllowingStateLoss();
-        contactsCursor.close();
     }
 
-    private void showQr(){
-        ShowQrFragment firstFragment = new ShowQrFragment();
+    private void showProfile(){
+        ProfileFragment firstFragment = new ProfileFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, firstFragment, "dds");
         fragmentTransaction.addToBackStack("dds");
         fragmentTransaction.commitAllowingStateLoss();
-        contactsCursor.close();
     }
 
     private void refreshList(){
-        contactsCursor.close();
-        if (!dbAdapter.isOpen()) dbAdapter.open("123");//todo
+        if (dbAdapter == null || !dbAdapter.isOpen()){
+            dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
+        }
         contactsCursor = dbAdapter.fetchContacts();
-        contactsAdapter.swapCursor(contactsCursor);
+        // Ustawienie nowego kursora i zamknięcie poprzedniego
+        contactsAdapter.swapCursor(contactsCursor).close();
     }
 
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+    private void showToolbar(){
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.app_name);
+        actionBar.setSubtitle("");
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
         inflater.inflate(R.menu.menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.showQr:
-                showQr();
-                break;
-
-            case R.id.refresh:
-                break;
+            case R.id.showProfile:
+                showProfile();
+                return true;
+            case R.id.addContact:
+                addContact();
+                return true;
+            default:
+                return false;
         }
-        return true;
-
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.add_contact_fab){
-            addUser();
+            addContact();
         }
     }
 }

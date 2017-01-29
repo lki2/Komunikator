@@ -1,5 +1,7 @@
 package koncewicz.lukasz.komunikator.utils;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
@@ -23,16 +25,11 @@ import javax.crypto.NoSuchPaddingException;
 public class RsaUtils {
     private static final String algorithm = "RSA";
 
-    public static KeyPair generateKeyPair() {
+    public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator kpg;
-        try {
-            kpg = KeyPairGenerator.getInstance(algorithm);
-            kpg.initialize(1024);
-            return kpg.genKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
+        kpg = KeyPairGenerator.getInstance(algorithm);
+        kpg.initialize(1024);
+        return kpg.genKeyPair();
     }
 
     public static PrivateKey privateKeyFromBase64(String privateKey) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeySpecException {
@@ -53,26 +50,18 @@ public class RsaUtils {
         return Base64.encodeToString(key.getEncoded(), Base64.DEFAULT);
     }
 
-    public static byte[] RSAEncrypt(final String plain, Key key){
-        return RSAEncrypt(plain.getBytes(), key);
+    @Nullable
+    public static byte[] RSAEncrypt(final byte[] plain, Key key) throws InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+        Cipher cipher = Cipher.getInstance(algorithm);
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(plain);
     }
 
-    public static byte[] RSAEncrypt(final byte[] plain, Key key){
-        try{
-            Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            return cipher.doFinal(plain);
-        }catch (Exception e){
-            return null;
-        }
-    }
-
-    public static String RSADecrypt(final byte[] encryptedBytes, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException,
+    static byte[] RSADecrypt(final byte[] encryptedBytes, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         Cipher cipher = Cipher.getInstance(algorithm);
         cipher.init(Cipher.DECRYPT_MODE, key);
-        byte [] decryptedBytes = cipher.doFinal(encryptedBytes);
-        return new String(decryptedBytes);
+        return cipher.doFinal(encryptedBytes);
     }
 }
