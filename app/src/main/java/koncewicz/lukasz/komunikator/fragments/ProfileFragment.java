@@ -38,20 +38,20 @@ public class ProfileFragment extends Fragment {
     private static final String PREFS = "koncewicz.lukasz.komunikator";
     private static final String PREFS_NAME = "NAME";
     private static final String PREFS_PHONE = "PHONE";
-    private static final String PREFS_KEY = "PHONE";
+    private static final String PREFS_KEY = "KEY";
 
     public static final String QR_NAME = "name";
     public static final String QR_PHONE = "phone";
     public static final String QR_KEY = "key";
 
     private ImageView imageView;
-    private EditText etUsername;
+    private EditText etName;
     private EditText etPhone;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        etUsername = (EditText) view.findViewById(R.id.et_name);
+        etName = (EditText) view.findViewById(R.id.et_name);
         etPhone = (EditText) view.findViewById(R.id.et_phone);
         etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
         imageView = (ImageView) view.findViewById(R.id.img_result_qr);
@@ -96,7 +96,7 @@ public class ProfileFragment extends Fragment {
 
         if (phone != null && name != null && publicKey != null) {
             etPhone.setText(phone);
-            etUsername.setText(name);
+            etName.setText(name);
             showQr(name, phone, publicKey);
         }
     }
@@ -104,14 +104,14 @@ public class ProfileFragment extends Fragment {
     private void showToolbar(){
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
-        actionBar.setTitle(R.string.my_profile);
+        actionBar.setTitle(R.string.fragment_profile_title);
         actionBar.setSubtitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
     }
 
     private void doJob(){
-        String username = etUsername.getText().toString();
+        String username = etName.getText().toString();
         String phone = etPhone.getText().toString();
 
         if(!PhoneNumberUtils.isValidNumber(phone)){

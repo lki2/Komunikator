@@ -88,7 +88,7 @@ public class ChatFragment extends Fragment{
                     dbAdapter.addMsg(msg);
                     refreshList();
                 }else {
-                    Toast.makeText(getActivity(),"Wpisz treść wiadomości",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.toast_empty_message_content,Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -143,13 +143,11 @@ public class ChatFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> listView, View view,
                                     int position, long id) {
-                // Get the cursor, positioned to the corresponding row in the result set
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-                // Get the state's capital from this row in the database.
                 String countryCode =
                         cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
-                Toast.makeText(getActivity(), countryCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), countryCode, Toast.LENGTH_SHORT).show(); //todo
             }
         });
     }
@@ -171,7 +169,7 @@ public class ChatFragment extends Fragment{
             }
         }
         else {
-            Toast.makeText(getActivity(), "Kontakt nie jest powiązany", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.toast_unbind_contact, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -67,9 +67,9 @@ public class SmsReceiver extends BroadcastReceiver
                 String phone = msgs[i].getOriginatingAddress();
                 addMsgToDb(phone, data);
                 refreshView(phone);
-            }
+            }   //todo multi msg
 
-            Toast.makeText(context, info, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, info, Toast.LENGTH_SHORT).show(); //todo delete
         }
     }
 

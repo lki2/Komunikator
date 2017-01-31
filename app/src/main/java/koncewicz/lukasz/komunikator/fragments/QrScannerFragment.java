@@ -5,6 +5,8 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +25,18 @@ public class QrScannerFragment extends Fragment implements ZXingScannerView.Resu
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        showToolbar();
         mScannerView = new ZXingScannerView(getActivity());
         return mScannerView;
+    }
+
+    private void showToolbar(){
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(R.string.fragment_qr_scanner_title);
+        actionBar.setSubtitle("");
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
     }
 
     @Override
@@ -40,7 +52,7 @@ public class QrScannerFragment extends Fragment implements ZXingScannerView.Resu
             Bundle bundle = parseQr(rawResult.getText());
             showAddUserFragment(bundle);
         } catch (JSONException e) {
-            Toast.makeText(getActivity(), "Nieprawidłowy kod", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.toast_incorrect_qr, Toast.LENGTH_LONG).show();
             resumePreview();
         }
     }

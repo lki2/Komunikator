@@ -40,7 +40,7 @@ public class DatabaseAdapter {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_CREATED_AT = "created_at";
 
-    // CONTACTS Table - column nmaes
+    // CONTACTS Table - column names
     public static final String COLUMN_PHONE = "phone";
     public static final String COLUMN_NAME = "name";
 

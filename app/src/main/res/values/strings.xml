@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Komunikator</string>
+    <string name="fragment_contacts_title">Komunikator</string>
 
     <!-- Show QR Code Fragment -->
     <string name="hint_username">Nazwa użytkownika</string>
@@ -8,15 +8,20 @@
     <string name="bt_generate">Wygeneruj kod</string>
     <string name="qr_code">QR code</string>
     <string name="country_code">+48</string>
-    <string name="bt_add_contact">Dodaj kontakt</string>
+    <string name="bt_add_contact">Dodaj</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="action_settings">Settings</string>
-    <string name="my_profile">Mój profil</string>
     <string name="public_key">Klucz publiczny:</string>
-    <string name="show_profile">Wyświetl profil</string>
-    <string name="add_contact">Dodaj kontakt</string>
-    <string name="contact_exists">Kontakt już istnieje</string>
-    <string name="contact_added">Dodano kontakt</string>
 
+    <string name="fragment_qr_scanner_title">Zeskanuj kod</string>
+    <string name="fragment_add_contact_title">Nowy kontakt</string>
+    <string name="fragment_profile_title">Mój profil</string>
+    <string name="menu_show_profile">Wyświetl profil</string>
+    <string name="menu_add_contact">Dodaj kontakt</string>
+    <string name="toast_unbind_contact">Kontakt nie jest powiązany</string>
+    <string name="toast_empty_message_content">Wpisz treść wiadomości</string>
+    <string name="toast_incorrect_qr">Nieprawidłowy kod</string>
+    <string name="toast_contact_exists">Kontakt już istnieje</string>
+    <string name="toast_contact_added">Dodano kontakt</string>
 
 </resources>

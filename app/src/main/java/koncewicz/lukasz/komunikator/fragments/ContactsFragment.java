@@ -130,7 +130,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
     private void showToolbar(){
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
-        actionBar.setTitle(R.string.app_name);
+        actionBar.setTitle(R.string.fragment_contacts_title);
         actionBar.setSubtitle("");
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);

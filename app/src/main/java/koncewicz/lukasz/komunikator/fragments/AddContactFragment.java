@@ -47,7 +47,7 @@ public class AddContactFragment extends Fragment {
                 addContact();
                 getActivity().getFragmentManager().popBackStack();
                 getActivity().getFragmentManager().popBackStack();
-                Toast.makeText(getActivity(), R.string.contact_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.toast_contact_added, Toast.LENGTH_SHORT).show();
             }
         });
         return view;
@@ -56,7 +56,7 @@ public class AddContactFragment extends Fragment {
     private void showToolbar(){
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         assert actionBar != null;
-        actionBar.setTitle("Nowy kontakt");
+        actionBar.setTitle(R.string.fragment_add_contact_title);
         actionBar.setSubtitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
@@ -72,7 +72,7 @@ public class AddContactFragment extends Fragment {
         if (userId > 0){
             dbAdapter.addContactKey(new KeyPOJO(key, userId));
         }else{
-            Toast.makeText(getActivity(), R.string.contact_exists, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.toast_contact_exists, Toast.LENGTH_SHORT).show();
         }
     }
 }

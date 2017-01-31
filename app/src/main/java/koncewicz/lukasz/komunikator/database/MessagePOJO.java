@@ -1,5 +1,7 @@
 package koncewicz.lukasz.komunikator.database;
 
+import android.support.annotation.Nullable;
+
 public class MessagePOJO {
 
     public long getContactId(){
@@ -29,6 +31,7 @@ public class MessagePOJO {
             return _value;
         }
 
+        @Nullable
         public static Status fromInt(int i) {
             for (Status b : Status.values()) {
                 if (b.getValue() == i) { return b; }

@@ -31,14 +31,16 @@ public class ChatCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         LinearLayout root = (LinearLayout) view;
-        int status = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS));
-        switch (MessagePOJO.Status.fromInt(status)){
+        int statusInt = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS));
+        MessagePOJO.Status status = MessagePOJO.Status.fromInt(statusInt);
+        assert status != null;
+        switch (status){
             case FAILURE:
                 root.setGravity(Gravity.END);
                 root.setPadding(50, 5, 10, 5);
                 view.findViewById(R.id.messageBox).setBackground(ContextCompat.getDrawable(context,
                         R.drawable.failure_msg));
-                ((TextView)view.findViewById(R.id.msg_content)).setTextColor(context.getResources().getColor(R.color.failureMsgFg));
+                ((TextView)view.findViewById(R.id.msg_content)).setTextColor(ContextCompat.getColor(context, R.color.failureMsgFg));
                 break;
             case SENT:
                 root.setGravity(Gravity.END);
@@ -51,6 +53,8 @@ public class ChatCursorAdapter extends CursorAdapter {
                 root.setPadding(10, 5, 50, 5);
                 view.findViewById(R.id.messageBox).setBackground(ContextCompat.getDrawable(context,
                         R.drawable.foreign_msg_bg));
+                break;
+            default:
                 break;
         }
 
