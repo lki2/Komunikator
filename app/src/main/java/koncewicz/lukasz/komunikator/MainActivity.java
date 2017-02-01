@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate()");
+        SQLiteDatabase.loadLibs(this);
         mCacheWord = new CacheWordActivityHandler(this);
         mCacheWord.connectToService();
     }
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     }
 
     private void prepareDatabase(){
-        SQLiteDatabase.loadLibs(this);
         DatabaseAdapter dbAdapter = getOpenDatabase();
         if (dbAdapter.getPublicKey() == null){
             Log.i(TAG,"Inicjalizacja pary kluczy");

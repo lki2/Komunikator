@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Komunikator.iml" filepath="$PROJECT_DIR$/Komunikator.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cacheWord/cacheWord.iml" filepath="$PROJECT_DIR$/cacheWord/cacheWord.iml" />
     </modules>
   </component>
 </project>
