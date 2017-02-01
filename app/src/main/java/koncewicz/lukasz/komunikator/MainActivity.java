@@ -13,7 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import info.guardianproject.cacheword.CacheWordActivityHandler;
+import info.guardianproject.cacheword.CacheWordHandler;
 import info.guardianproject.cacheword.ICacheWordSubscriber;
 import info.guardianproject.cacheword.PassphraseSecrets;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
@@ -29,13 +29,13 @@ import java.security.KeyPair;
 public class MainActivity extends AppCompatActivity implements ICacheWordSubscriber {
     private static final String TAG = "MainActivity";
 
-    CacheWordActivityHandler mCacheWord;
+    CacheWordHandler mCacheWord;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate()");
         SQLiteDatabase.loadLibs(this);
-        mCacheWord = new CacheWordActivityHandler(this);
+        mCacheWord = new CacheWordHandler(this);
         mCacheWord.connectToService();
     }
 
@@ -186,13 +186,13 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     protected void onPause() {
         super.onPause();
         Log.e(TAG, String.valueOf(mCacheWord.isLocked()));
-        mCacheWord.onPause();
+        mCacheWord.disconnectFromService();
 }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mCacheWord.onResume();
+        mCacheWord.connectToService();
         Log.e(TAG, String.valueOf(mCacheWord.isLocked()));
     }
 
