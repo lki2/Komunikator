@@ -11,10 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView android:id="@+id/usersList"
+        <ListView android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_main"/>
+            android:background="@color/bg_main" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_contact_fab"
@@ -28,18 +28,5 @@
             app:backgroundTint="@color/divider"
             app:layout_behavior="koncewicz.lukasz.komunikator.utils.FAB_Float_on_Scroll"/>
     </android.support.design.widget.CoordinatorLayout>
-<!--
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_contact_fab"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/divider"
-        app:layout_behavior="koncewicz.lukasz.komunikator.utils.FAB_Float_on_Scroll"/> !-->
-
 
 </LinearLayout>

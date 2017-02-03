@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.KeyPOJO;
@@ -60,6 +61,7 @@ public class AddContactFragment extends Fragment {
         actionBar.setSubtitle("");
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.show();
     }
 
     private void addContact(){
@@ -67,7 +69,7 @@ public class AddContactFragment extends Fragment {
         String phone = etPhone.getText().toString();
         String username = etUsername.getText().toString();
 
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(getActivity());
+        DatabaseAdapter dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
         Long userId = dbAdapter.addContact(new ContactPOJO(phone, username));
         if (userId > 0){
             dbAdapter.addContactKey(new KeyPOJO(key, userId));

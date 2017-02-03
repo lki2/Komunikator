@@ -9,8 +9,9 @@ import android.util.Log;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
-import net.sqlcipher.database.SQLiteOpenHelper;
+import net.sqlcipher.database.SQLiteException;
 
+import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
 
 public class DatabaseAdapter {
@@ -22,6 +23,7 @@ public class DatabaseAdapter {
     private static DatabaseHelper mDbHelper;
     private static SQLiteDatabase mDb;
     private Context mCtx;
+    private CacheWordHandler mCacheWord;
 
     // Database Version
     private static final int DATABASE_VERSION = 13;
@@ -83,13 +85,14 @@ public class DatabaseAdapter {
     private static final String SQL_DELETE_TABLE_CHATS = "DROP TABLE IF EXISTS " + TABLE_CHATS;
     private static final String SQL_DELETE_TABLE_KEYS = "DROP TABLE IF EXISTS " + TABLE_KEYS;
 
-    private DatabaseAdapter(Context ctx) {
+    private DatabaseAdapter(Context ctx, CacheWordHandler cacheWord) {
         this.mCtx = ctx;
+        this.mCacheWord = cacheWord;
     }
 
-    public static synchronized DatabaseAdapter getInstance(Context context) {
+    public static synchronized DatabaseAdapter getInstance(Context context, CacheWordHandler cacheWord) {
         if (sInstance == null) {
-            sInstance = new DatabaseAdapter(context.getApplicationContext());
+            sInstance = new DatabaseAdapter(context.getApplicationContext(), cacheWord);
         }
         return sInstance;
     }
@@ -98,13 +101,13 @@ public class DatabaseAdapter {
         return mDb != null && mDb.isOpen();
     }
 
-    public void open(String pass) throws SQLException {
+    public void open() throws SQLException {
         if (mDbHelper == null) {
-            mDbHelper = new DatabaseHelper(mCtx);
+            mDbHelper = new DatabaseHelper(mCtx, mCacheWord);
             Log.e(TAG, "open DbHelper");
         }
         if (mDb == null || !mDb.isOpen()){
-            mDb = mDbHelper.getWritableDatabase(pass);
+            mDb = mDbHelper.getWritableDatabase();
             Log.e(TAG, "open Db");
         }
     }
@@ -114,24 +117,26 @@ public class DatabaseAdapter {
             mDbHelper.close();
             Log.e(TAG, "close DbHelper");
         }
-        if (mDb != null){
+        if (mDb != null && mDb.isOpen()){
             mDb.close();
             Log.e(TAG, "close Db");
         }
+        mDb = null;
+        mDbHelper = null;
     }
 
-    private static class DatabaseHelper extends SQLiteOpenHelper {
+    private static class DatabaseHelper extends SQLCipherOpenHelper {
 
-        private DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        private DatabaseHelper(Context context, CacheWordHandler cacheWord) {
+            super(cacheWord, context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
         public void onCreate(SQLiteDatabase db) {
-            Log.w(TAG, SQL_CREATE_TABLE_CONTACTS);
+            Log.d(TAG, SQL_CREATE_TABLE_CONTACTS);
             db.execSQL(SQL_CREATE_TABLE_CONTACTS);
-            Log.w(TAG, SQL_CREATE_TABLE_CHATS);
+            Log.d(TAG, SQL_CREATE_TABLE_CHATS);
             db.execSQL(SQL_CREATE_TABLE_CHATS);
-            Log.w(TAG, SQL_CREATE_TABLE_KEYS);
+            Log.d(TAG, SQL_CREATE_TABLE_KEYS);
             db.execSQL(SQL_CREATE_TABLE_KEYS);
         }
 
@@ -151,6 +156,7 @@ public class DatabaseAdapter {
      * @return ID wiadomości albo -1.
      */
     public long addMsg(MessagePOJO msg) {
+        openGuard();
         if (checkIfContactExists(msg.getContactId())){
             ContentValues initialValues = new ContentValues();
             initialValues.put(COLUMN_CONTACT_ID, msg.getContactId());
@@ -168,6 +174,7 @@ public class DatabaseAdapter {
      * @return ID kontaktu albo -1.
      */
     public long addContact(ContactPOJO contact) {
+        openGuard();
         if(getContact(contact.getPhone()) < 0){
             ContentValues initialValues = new ContentValues();
             initialValues.put(COLUMN_PHONE, contact.getPhone());
@@ -184,6 +191,7 @@ public class DatabaseAdapter {
      * @return ID kontaktu albo -1.
      */
     public long getContact(String phone){
+        openGuard();
         String normalizedNumber = PhoneNumberUtils.normalizeNumber(phone);
         Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
                 COLUMN_PHONE + " = '" + normalizedNumber + "'", null, null, null, null, null);
@@ -204,6 +212,7 @@ public class DatabaseAdapter {
      * @return {@code true} w przypadku powodzenia albo {@code false}.
      */
     public boolean deleteContact(Long contactId) {
+        openGuard();
         mDb.delete(TABLE_CHATS, COLUMN_CONTACT_ID + "=" + contactId, null);
         return mDb.delete(TABLE_CONTACTS, COLUMN_ID + "=" + contactId, null) > 0;
     }
@@ -267,6 +276,7 @@ public class DatabaseAdapter {
      * @return ID klucza.
      */
     private long addOrUpdateKey(KeyPOJO key){
+        openGuard();
         ContentValues initialValues = new ContentValues();
         initialValues.put(COLUMN_KEY, key.getKey());
         initialValues.put(COLUMN_CONTACT_ID, key.getContactId());
@@ -280,6 +290,7 @@ public class DatabaseAdapter {
      */
     @Nullable
     private String getKey(long contactId){
+        openGuard();
         Cursor mCursor = mDb.query(TABLE_KEYS, new String[] {COLUMN_ID, COLUMN_CONTACT_ID, COLUMN_KEY},
                 COLUMN_CONTACT_ID + " = '" + contactId + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
@@ -299,6 +310,7 @@ public class DatabaseAdapter {
      * @return {@code true} gdy kontakt istnieje albo {@code false}.
      */
     private boolean checkIfContactExists(Long contactId){
+        openGuard();
         Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
                 COLUMN_ID + " = '" + contactId + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
@@ -312,6 +324,7 @@ public class DatabaseAdapter {
 
     //todo
     public Cursor fetchChat(long contactId){
+        openGuard();
         Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME,
                         COLUMN_CONTACT_ID, COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_CONTACT_ID + " = " + contactId,
                 null, null, null, null, null);
@@ -321,11 +334,20 @@ public class DatabaseAdapter {
 
     //todo
     public Cursor fetchContacts() {
+        openGuard();
         Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE,
                 COLUMN_NAME}, null, null, null, null, null);
         if (mCursor.getCount() > 0) {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+
+    private void openGuard() throws SQLiteException {
+        if(isOpen()) return;
+        open();
+        if(isOpen()) return;
+        Log.d(TAG, "open guard failed");
+        throw new  SQLiteException("Could not open database");
     }
 }

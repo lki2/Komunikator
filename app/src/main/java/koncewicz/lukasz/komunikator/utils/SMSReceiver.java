@@ -13,6 +13,8 @@ import net.sqlcipher.database.SQLiteDatabase;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+import info.guardianproject.cacheword.CacheWordHandler;
+import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
 import koncewicz.lukasz.komunikator.database.ContactPOJO;
@@ -24,20 +26,15 @@ public class SmsReceiver extends BroadcastReceiver
 
     Context context;
 
-    //todo szyfrowanie ++
     //todo exceptions in RSA cipher
-    //todo dodawanie kontaktu ++
     //todo edycja kontaktu
     //todo usuwanie wiadomosci
     //todo status wiadomosci
-    //todo odswiezanie listy uzytkownikow ++
-    //todo wprawadzanie hasla do bazy danych CacheWord
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
         this.context = context;
-
         Log.d(TAG, "odebrano sms");
 
         Bundle bundle = intent.getExtras();
@@ -74,11 +71,15 @@ public class SmsReceiver extends BroadcastReceiver
     }
 
     private void addMsgToDb(String phone, byte[] data){
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context);
+
+        CacheWordHandler mCacheWord = new CacheWordHandler(context);
+        mCacheWord.connectToService();
+
+        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context, mCacheWord);
 
         if (!dbAdapter.isOpen()) {
             SQLiteDatabase.loadLibs(context);
-            dbAdapter.open("123"); //todo
+            dbAdapter.open();
         }
 
         long userId = dbAdapter.getContact(phone);
@@ -100,6 +101,7 @@ public class SmsReceiver extends BroadcastReceiver
             }
         }
         dbAdapter.close();
+        mCacheWord.disconnectFromService();
     }
 
     private void refreshView(String phone){

@@ -51,7 +51,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         view.findViewById(R.id.add_contact_fab).setOnClickListener(this);
-        listView = (ListView) view.findViewById(R.id.usersList);
+        listView = (ListView) view.findViewById(R.id.contacts_list);
         return view;
     }
 
@@ -134,6 +134,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
         actionBar.setSubtitle("");
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.show();
     }
 
     @Override
