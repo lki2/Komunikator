@@ -75,7 +75,7 @@ public class SmsReceiver extends BroadcastReceiver
         CacheWordHandler mCacheWord = new CacheWordHandler(context);
         mCacheWord.connectToService();
 
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(context, mCacheWord);
+        DatabaseAdapter dbAdapter = new DatabaseAdapter(context, mCacheWord);
 
         if (!dbAdapter.isOpen()) {
             SQLiteDatabase.loadLibs(context);

@@ -19,9 +19,8 @@ public class DatabaseAdapter {
     // Logcat tag
     private static final String TAG = DatabaseAdapter.class.getName();
 
-    private static DatabaseAdapter sInstance;
-    private static DatabaseHelper mDbHelper;
-    private static SQLiteDatabase mDb;
+    private DatabaseHelper mDbHelper;
+    private SQLiteDatabase mDb;
     private Context mCtx;
     private CacheWordHandler mCacheWord;
 
@@ -85,16 +84,9 @@ public class DatabaseAdapter {
     private static final String SQL_DELETE_TABLE_CHATS = "DROP TABLE IF EXISTS " + TABLE_CHATS;
     private static final String SQL_DELETE_TABLE_KEYS = "DROP TABLE IF EXISTS " + TABLE_KEYS;
 
-    private DatabaseAdapter(Context ctx, CacheWordHandler cacheWord) {
+    public DatabaseAdapter(Context ctx, CacheWordHandler cacheWord) {
         this.mCtx = ctx;
         this.mCacheWord = cacheWord;
-    }
-
-    public static synchronized DatabaseAdapter getInstance(Context context, CacheWordHandler cacheWord) {
-        if (sInstance == null) {
-            sInstance = new DatabaseAdapter(context.getApplicationContext(), cacheWord);
-        }
-        return sInstance;
     }
 
     public boolean isOpen(){
@@ -121,8 +113,6 @@ public class DatabaseAdapter {
             mDb.close();
             Log.e(TAG, "close Db");
         }
-        mDb = null;
-        mDbHelper = null;
     }
 
     private static class DatabaseHelper extends SQLCipherOpenHelper {

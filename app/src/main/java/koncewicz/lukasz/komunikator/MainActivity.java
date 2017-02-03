@@ -1,35 +1,26 @@
 package koncewicz.lukasz.komunikator;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
+import java.security.KeyPair;
 
 import info.guardianproject.cacheword.CacheWordHandler;
 import info.guardianproject.cacheword.ICacheWordSubscriber;
-import info.guardianproject.cacheword.PassphraseSecrets;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
 import koncewicz.lukasz.komunikator.fragments.LoginFragment;
 import koncewicz.lukasz.komunikator.fragments.RegisterFragment;
 import koncewicz.lukasz.komunikator.utils.RsaUtils;
-
-import net.sqlcipher.database.SQLiteDatabase;
-
-import java.security.KeyPair;
 
 public class MainActivity extends AppCompatActivity implements ICacheWordSubscriber {
     private static final String TAG = "MainActivity";
@@ -49,8 +40,10 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
         myToolbar.setVisibility(Toolbar.GONE);
         setSupportActionBar(myToolbar);
 
+
         SQLiteDatabase.loadLibs(this);
         mCacheWord = new CacheWordHandler(this);
+        mCacheWord.connectToService();
     }
 
     private void prepareDatabase(){
@@ -69,7 +62,9 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     }
 
     public DatabaseAdapter getOpenDatabase(){
-        dbAdapter = DatabaseAdapter.getInstance(MainActivity.this, mCacheWord);
+        if (dbAdapter == null) {
+            dbAdapter = new DatabaseAdapter(MainActivity.this, mCacheWord);
+        }
         if (!dbAdapter.isOpen()) {
             dbAdapter.open();
         }
@@ -99,21 +94,22 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, String.valueOf(mCacheWord.isLocked()));
-        mCacheWord.connectToService();
+        Log.w(TAG, "onResume()");
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.e(TAG, String.valueOf(mCacheWord.isLocked()));
-        mCacheWord.disconnectFromService();
+        Log.w(TAG, "onPause()");
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.w(TAG, "onDestroy()");
+        mCacheWord.disconnectFromService();
         if (dbAdapter != null){
             dbAdapter.close();
         }
