@@ -38,6 +38,8 @@
             </intent-filter>
         </receiver>
 
+        <service android:name="info.guardianproject.cacheword.CacheWordService" android:enabled="true" android:exported="false" />
+
     </application>
 
 </manifest>

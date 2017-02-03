@@ -112,6 +112,7 @@ public class ChatFragment extends Fragment{
         actionBar.setSubtitle(phone);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setDisplayShowHomeEnabled(true);
+        actionBar.show();
     }
 
     @Override

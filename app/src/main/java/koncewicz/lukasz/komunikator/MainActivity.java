@@ -1,5 +1,6 @@
 package koncewicz.lukasz.komunikator;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -9,31 +10,117 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
-import koncewicz.lukasz.komunikator.utils.RsaUtils;
-
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.security.KeyPair;
 
-public class MainActivity extends AppCompatActivity {
+import info.guardianproject.cacheword.CacheWordHandler;
+import info.guardianproject.cacheword.ICacheWordSubscriber;
+import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
+import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
+import koncewicz.lukasz.komunikator.fragments.LoginFragment;
+import koncewicz.lukasz.komunikator.fragments.RegisterFragment;
+import koncewicz.lukasz.komunikator.utils.RsaUtils;
+
+public class MainActivity extends AppCompatActivity implements ICacheWordSubscriber {
     private static final String TAG = "MainActivity";
+    private DatabaseAdapter dbAdapter;
+    private CacheWordHandler mCacheWord;
+
+    public CacheWordHandler getCacheWord() {
+        return mCacheWord;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.w(TAG, "onCreate()");
-
-        prepareDatabase();
-        setToolbar();
-        showContactsFragment();
-    }
-
-    private void setToolbar(){
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        myToolbar.setVisibility(Toolbar.GONE);
         setSupportActionBar(myToolbar);
+
+
+        SQLiteDatabase.loadLibs(this);
+        mCacheWord = new CacheWordHandler(this);
+        mCacheWord.connectToService();
+    }
+
+    private void prepareDatabase(){
+        DatabaseAdapter dbAdapter = getOpenDatabase();
+        if (dbAdapter.getPublicKey() == null){
+            Log.i(TAG,"Inicjalizacja pary kluczy");
+            try {
+                KeyPair keyPair = RsaUtils.generateKeyPair();
+                String publicKey = RsaUtils.keyToBase64(keyPair.getPublic());
+                String privateKey = RsaUtils.keyToBase64(keyPair.getPrivate());
+                dbAdapter.addOrUpdateOwnKeyPair(publicKey, privateKey);
+            }catch (Exception e){
+                Log.e(TAG,"Niepowodzenie inicjalizacji pary kluczy");
+            }
+        }
+    }
+
+    public DatabaseAdapter getOpenDatabase(){
+        if (dbAdapter == null) {
+            dbAdapter = new DatabaseAdapter(MainActivity.this, mCacheWord);
+        }
+        if (!dbAdapter.isOpen()) {
+            dbAdapter.open();
+        }
+        return dbAdapter;
+    }
+
+    @Override
+    public void onCacheWordUninitialized() {
+        showFragment(new RegisterFragment());
+    }
+
+    @Override
+    public void onCacheWordLocked() {
+        if (mCacheWord.isLocked()) {
+            showFragment(new LoginFragment());
+        }
+    }
+
+    @Override
+    public void onCacheWordOpened() {
+        if (!mCacheWord.isLocked()){
+            prepareDatabase();
+            showFragment(new ContactsFragment());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w(TAG, "onResume()");
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.w(TAG, "onPause()");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.w(TAG, "onDestroy()");
+        mCacheWord.disconnectFromService();
+        if (dbAdapter != null){
+            dbAdapter.close();
+        }
+    }
+
+    private void showFragment(Fragment fragment){
+        //fragment.setEnterTransition(new Slide(Gravity.RIGHT));
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.fragment_container, fragment);
+        ft.commit();
     }
 
     @Override
@@ -49,44 +136,5 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return false;
-    }
-
-    private void prepareDatabase(){
-        SQLiteDatabase.loadLibs(this);
-        DatabaseAdapter dbAdapter = getOpenDatabase();
-        if (dbAdapter.getPublicKey() == null){
-            Log.i(TAG,"Inicjalizacja pary kluczy");
-            try {
-                KeyPair keyPair = RsaUtils.generateKeyPair();
-                String publicKey = RsaUtils.keyToBase64(keyPair.getPublic());
-                String privateKey = RsaUtils.keyToBase64(keyPair.getPrivate());
-                dbAdapter.addOrUpdateOwnKeyPair(publicKey, privateKey);
-            }catch (Exception e){
-                Log.e(TAG,"Niepowodzenie inicjalizacji pary kluczy");
-            }
-        }
-    }
-
-    private void showContactsFragment(){
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ContactsFragment contactsFragment = new ContactsFragment();
-        ft.replace(R.id.fragment_container, contactsFragment);
-        ft.commit();
-    }
-
-    public DatabaseAdapter getOpenDatabase(){
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(MainActivity.this);
-        if (!dbAdapter.isOpen()) {
-            dbAdapter.open("123"); // todo pass
-        }
-        return dbAdapter;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        DatabaseAdapter.getInstance(MainActivity.this).close();
-        Log.w(TAG, "onDestroy()");
     }
 }

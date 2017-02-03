@@ -22,6 +22,7 @@ import com.google.zxing.common.BitMatrix;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
@@ -119,7 +120,7 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(getActivity());
+        DatabaseAdapter dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
         String publicKey = dbAdapter.getPublicKey();
         putToPrefs(username, phone, publicKey);
         showQr(username, phone, publicKey);
