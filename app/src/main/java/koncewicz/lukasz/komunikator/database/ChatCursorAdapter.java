@@ -31,7 +31,7 @@ public class ChatCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         LinearLayout root = (LinearLayout) view;
-        int statusInt = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_STATUS));
+        int statusInt = cursor.getInt(cursor.getColumnIndexOrThrow(Table.MESSAGES._STATUS));
         MessagePOJO.Status status = MessagePOJO.Status.fromInt(statusInt);
         assert status != null;
         switch (status){
@@ -61,8 +61,8 @@ public class ChatCursorAdapter extends CursorAdapter {
         TextView tvContent = (TextView) view.findViewById(R.id.msg_content);
         TextView tvTime = (TextView) view.findViewById(R.id.msg_time);
 
-        String continent = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
-        String region = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_DATETIME));
+        String continent = cursor.getString(cursor.getColumnIndexOrThrow(Table.MESSAGES._CONTENT));
+        String region = cursor.getString(cursor.getColumnIndexOrThrow(Table.MESSAGES._DATETIME));
 
         tvContent.setText(continent);
         tvTime.setText(region);

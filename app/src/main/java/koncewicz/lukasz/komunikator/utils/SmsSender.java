@@ -23,10 +23,6 @@ public class SmsSender {
         this.context = context;
     }
 
-    public void send(String phone, String text){
-        send(phone, text.getBytes());
-    }
-
     public void send(String phone, byte[] text){
         PendingIntent sentPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_SENT), 0);
         PendingIntent deliveredPendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(SMS_DELIVERED), 0);

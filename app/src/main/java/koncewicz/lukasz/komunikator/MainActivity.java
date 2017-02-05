@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
         MessagePOJO[] msgs = buffer.popMessages();
         for (MessagePOJO encryptedMsg: msgs) {
             long userId = dbAdapter.getContactId(encryptedMsg.getSenderNumber());
-            Log.e("odebrane", encryptedMsg.getContent());
             if(userId == -1){
                 dbAdapter.addContact(new ContactPOJO(encryptedMsg.getSenderNumber(), getString(R.string.new_contact_name)));
                 dbAdapter.addMsg(encryptedMsg);
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
                     PublicKey contactPubK = RsaUtils.publicKeyFromBase64(dbAdapter.getContactKey(userId));
                     PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
 
-                    byte[] bytes = Base64.decode(encryptedMsg.getContent(), Base64.DEFAULT); //todo tutaj inne
+                    byte[] bytes = Base64.decode(encryptedMsg.getContent(), Base64.DEFAULT);
                     bytes = RsaUtils.RSADecrypt(bytes, contactPubK);
                     bytes = RsaUtils.RSADecrypt(bytes, privK);
                     String decryptedContent = new String(bytes);

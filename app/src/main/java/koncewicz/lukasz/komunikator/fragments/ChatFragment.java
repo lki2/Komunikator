@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -24,6 +23,7 @@ import java.security.PublicKey;
 
 import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.database.ChatCursorAdapter;
+import koncewicz.lukasz.komunikator.database.ContactPOJO;
 import koncewicz.lukasz.komunikator.utils.RsaUtils;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
@@ -49,19 +49,12 @@ public class ChatFragment extends Fragment{
     private String phone; // Numer telefonu kontaktu.
     private String name;
 
-    /**
-     * Przygotowuję instancję {@code ChatFragment} z podanymi parametrami.
-     * @param contactId ID kontaktu.
-     * @param phone numer telefonu.
-     * @param name nazwa kontaktu.
-     * @return referencja do obiektu {@code ChatFragment}.
-     */
-    public static ChatFragment newInstance(long contactId, String phone, String name) {
+    public static ChatFragment newInstance(ContactPOJO contact) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
-        args.putLong(CONTACT_ID, contactId);
-        args.putString(PHONE, phone);
-        args.putString(NAME, name);
+        args.putLong(CONTACT_ID, contact.getId());
+        args.putString(PHONE, contact.getPhone());
+        args.putString(NAME, contact.getName());
         fragment.setArguments(args);
         return fragment;
     }
@@ -141,17 +134,6 @@ public class ChatFragment extends Fragment{
 
         messageList.setStackFromBottom(true);
         messageList.setAdapter(dataAdapter);
-        messageList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> listView, View view,
-                                    int position, long id) {
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-
-                String countryCode =
-                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_CONTENT));
-                Toast.makeText(getActivity(), countryCode, Toast.LENGTH_SHORT).show(); //todo
-            }
-        });
     }
 
     private boolean encryptMsgAndSend(MessagePOJO msg){

@@ -5,19 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
+import java.util.Calendar;
 
-import net.sqlcipher.database.SQLiteDatabase;
-
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
-import info.guardianproject.cacheword.CacheWordHandler;
-import koncewicz.lukasz.komunikator.MainActivity;
-import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
 
 public class SmsReceiver extends BroadcastReceiver
 {
@@ -45,7 +37,7 @@ public class SmsReceiver extends BroadcastReceiver
             String info = "Binary SMS from ";
             Object[] pdus = (Object[]) bundle.get("pdus");
             msgs = new SmsMessage[pdus.length];
-            byte[] data = null;
+            byte[] data;
 
             for (int i=0; i < msgs.length; i++){
                 msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
@@ -62,46 +54,16 @@ public class SmsReceiver extends BroadcastReceiver
                 info += content;
 
                 String phone = msgs[i].getOriginatingAddress();
-                addMsgToDb(phone, data);
+                addMsgToBuffer(phone, data);
                 refreshView(phone);
-            }   //todo multi msg
 
-            Toast.makeText(context, info, Toast.LENGTH_SHORT).show(); //todo delete
+            }   //todo multi msg
         }
     }
 
-    private void addMsgToDb(String phone, byte[] data){
-
-        CacheWordHandler mCacheWord = new CacheWordHandler(context);
-        mCacheWord.connectToService();
-
-        DatabaseAdapter dbAdapter = new DatabaseAdapter(context, mCacheWord);
-
-        if (!dbAdapter.isOpen()) {
-            SQLiteDatabase.loadLibs(context);
-            dbAdapter.open();
-        }
-
-        long userId = dbAdapter.getContact(phone);
-        if(userId == -1){
-            ContactPOJO contact = new ContactPOJO(phone, "nowy kontakt");
-            MessagePOJO msg = new MessagePOJO(userId, data.toString(), MessagePOJO.Status.RECEIVED);
-            dbAdapter.addMsg(msg);
-
-        }else {
-            try {
-                PublicKey pubK = RsaUtils.publicKeyFromBase64(dbAdapter.getContactKey(userId));
-                PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
-
-                String content = new String(RsaUtils.RSADecrypt(RsaUtils.RSADecrypt(data, pubK), privK));
-                MessagePOJO msg = new MessagePOJO(userId, content, MessagePOJO.Status.RECEIVED);
-                dbAdapter.addMsg(msg);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        dbAdapter.close();
-        mCacheWord.disconnectFromService();
+    private void addMsgToBuffer(String phone, byte[] data){
+        MessagesBuffer buffer = new MessagesBuffer(context);
+        buffer.putMessage(new MessagePOJO(phone, Base64.encodeToString(data, Base64.DEFAULT), java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime())));
     }
 
     private void refreshView(String phone){

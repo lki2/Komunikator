@@ -3,20 +3,31 @@ package koncewicz.lukasz.komunikator.database;
 import koncewicz.lukasz.komunikator.utils.PhoneNumberUtils;
 
 public class ContactPOJO {
-    
-    private String phone;
-    private String name;
-    
+
+    private long mId;
+    private String mPhone;
+    private String mName;
+
+    public ContactPOJO(long id, String phone, String name){
+        mId = id;
+        mPhone = PhoneNumberUtils.normalizeNumber(phone);
+        mName = name;
+    }
+
     public ContactPOJO(String phone, String name){
-        this.phone = PhoneNumberUtils.normalizeNumber(phone);
-        this.name = name;
+        mPhone = PhoneNumberUtils.normalizeNumber(phone);
+        mName = name;
     }
 
     public String getPhone() {
-        return phone;
+        return mPhone;
     }
 
     public String getName() {
-        return name;
+        return mName;
+    }
+
+    public long getId() {
+        return mId;
     }
 }

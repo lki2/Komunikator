@@ -22,6 +22,7 @@ import android.widget.ListView;
 import net.sqlcipher.Cursor;
 
 import koncewicz.lukasz.komunikator.MainActivity;
+import koncewicz.lukasz.komunikator.database.ContactPOJO;
 import koncewicz.lukasz.komunikator.database.ContactsCursorAdapter;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
@@ -87,16 +88,15 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
             public void onItemClick(AdapterView<?> listView, View view,
                                     int position, long id) {
                 Cursor cursor = (Cursor) listView.getItemAtPosition(position);
-                long userId = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
-                String phone = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_PHONE));
-                String username = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_NAME));
-                openChat(userId, phone, username);
+                ContactPOJO contact = DatabaseAdapter.getContact(cursor);
+                cursor.close();
+                openChat(contact);
             }
         });
     }
 
-    private void openChat(long userId, String phone, String username){
-        ChatFragment chatFragment = ChatFragment.newInstance(userId, phone , username);
+    private void openChat(ContactPOJO contact){
+        ChatFragment chatFragment = ChatFragment.newInstance(contact);
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_container, chatFragment, "dd");
         fragmentTransaction.addToBackStack("dd");

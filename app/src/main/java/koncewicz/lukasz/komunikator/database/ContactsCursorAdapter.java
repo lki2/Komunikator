@@ -38,8 +38,8 @@ public class ContactsCursorAdapter extends CursorAdapter {
         TextView tvContinent = (TextView) view.findViewById(R.id.msg_content);
         TextView tvRegion = (TextView) view.findViewById(R.id.msg_time);
 
-        String continent = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_NAME));
-        String region = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_PHONE));
+        String continent = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._NAME));
+        String region = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._PHONE));
 
         tvContinent.setText(continent);
         tvRegion.setText(region);

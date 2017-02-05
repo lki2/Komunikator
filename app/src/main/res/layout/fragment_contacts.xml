@@ -25,8 +25,7 @@
             android:layout_margin="16dp"
             android:clickable="true"
             android:src="@drawable/ic_add"
-            app:backgroundTint="@color/divider"
-            app:layout_behavior="koncewicz.lukasz.komunikator.utils.FAB_Float_on_Scroll"/>
+            app:backgroundTint="@color/divider"/>
     </android.support.design.widget.CoordinatorLayout>
 
 </LinearLayout>

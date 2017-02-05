@@ -25,64 +25,13 @@ public class DatabaseAdapter {
     private CacheWordHandler mCacheWord;
 
     // Database Version
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 14;
+
     // Database Name
     private static final String DATABASE_NAME = "komunikator";
 
     private static final long publicKeyContactId = 200L;
     private static final long privateKeyContactId = 201L;
-
-    // Table Names
-    private static final String TABLE_CONTACTS = "contacts";
-    private static final String TABLE_CHATS = "chats";
-    private static final String TABLE_KEYS = "keys";
-
-    // Common column names
-    public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_CREATED_AT = "created_at";
-
-    // CONTACTS Table - column names
-    public static final String COLUMN_PHONE = "phone";
-    public static final String COLUMN_NAME = "name";
-
-    // CHATS Table - column names
-    public static final String COLUMN_CONTACT_ID = "contact_id";
-    public static final String COLUMN_DATETIME = "datetime";
-    public static final String COLUMN_CONTENT = "content";
-    public static final String COLUMN_STATUS = "status";
-
-    // KEYS Table - column names
-    public static final String COLUMN_KEY = "key";
-
-    private static final String TEXT_TYPE = " TEXT";
-    private static final String DATETIME_TYPE = " DATETIME";
-    private static final String INTEGER_TYPE = " INTEGER";
-
-    private static final String SQL_CREATE_TABLE_CONTACTS =
-            "CREATE TABLE " + TABLE_CONTACTS + " (" +
-                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
-                    COLUMN_PHONE + TEXT_TYPE + "," +
-                    COLUMN_NAME + TEXT_TYPE + " )";
-
-    private static final String SQL_CREATE_TABLE_CHATS =
-            "CREATE TABLE " + TABLE_CHATS + " (" +
-                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
-                    COLUMN_DATETIME + DATETIME_TYPE + " DEFAULT CURRENT_TIMESTAMP," +
-                    COLUMN_CONTACT_ID + INTEGER_TYPE + "," +
-                    COLUMN_CONTENT + TEXT_TYPE + "," +
-                    COLUMN_STATUS + INTEGER_TYPE + "," +
-    " FOREIGN KEY(" + COLUMN_CONTACT_ID + ") REFERENCES " + TABLE_CONTACTS + "(" + COLUMN_ID + "))";
-
-    private static final String SQL_CREATE_TABLE_KEYS =
-            "CREATE TABLE " + TABLE_KEYS + " (" +
-                    COLUMN_ID + INTEGER_TYPE + " PRIMARY KEY autoincrement," +
-                    COLUMN_CONTACT_ID + INTEGER_TYPE + "," +
-                    COLUMN_KEY + TEXT_TYPE + "," +
-                    " FOREIGN KEY(" + COLUMN_CONTACT_ID + ") REFERENCES " + TABLE_CONTACTS + "(" + COLUMN_ID + "))";
-
-    private static final String SQL_DELETE_TABLE_CONTACTS = "DROP TABLE IF EXISTS " + TABLE_CONTACTS;
-    private static final String SQL_DELETE_TABLE_CHATS = "DROP TABLE IF EXISTS " + TABLE_CHATS;
-    private static final String SQL_DELETE_TABLE_KEYS = "DROP TABLE IF EXISTS " + TABLE_KEYS;
 
     public DatabaseAdapter(Context ctx, CacheWordHandler cacheWord) {
         this.mCtx = ctx;
@@ -122,20 +71,20 @@ public class DatabaseAdapter {
         }
 
         public void onCreate(SQLiteDatabase db) {
-            Log.d(TAG, SQL_CREATE_TABLE_CONTACTS);
-            db.execSQL(SQL_CREATE_TABLE_CONTACTS);
-            Log.d(TAG, SQL_CREATE_TABLE_CHATS);
-            db.execSQL(SQL_CREATE_TABLE_CHATS);
-            Log.d(TAG, SQL_CREATE_TABLE_KEYS);
-            db.execSQL(SQL_CREATE_TABLE_KEYS);
+            Log.d(TAG, Table.CONTACTS.TABLE_NAME);
+            db.execSQL(Table.CONTACTS.SQL_CREATE_TABLE);
+            Log.d(TAG, Table.MESSAGES.SQL_CREATE_TABLE);
+            db.execSQL(Table.MESSAGES.SQL_CREATE_TABLE);
+            Log.d(TAG, Table.KEYS.SQL_CREATE_TABLE);
+            db.execSQL(Table.KEYS.SQL_CREATE_TABLE);
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL(SQL_DELETE_TABLE_CONTACTS);
-            db.execSQL(SQL_DELETE_TABLE_CHATS);
-            db.execSQL(SQL_DELETE_TABLE_KEYS);
+            db.execSQL(Table.CONTACTS.SQL_DELETE_TABLE);
+            db.execSQL(Table.MESSAGES.SQL_DELETE_TABLE);
+            db.execSQL(Table.KEYS.SQL_DELETE_TABLE);
             onCreate(db);
         }
     }
@@ -158,10 +107,10 @@ public class DatabaseAdapter {
         }
 
         ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_CONTACT_ID, contactId);
-        initialValues.put(COLUMN_CONTENT, msg.getContent());
-        initialValues.put(COLUMN_STATUS, msg.getStatus().getValue());
-        return mDb.insert(TABLE_CHATS, null, initialValues);
+        initialValues.put(Table.MESSAGES._CONTACT_ID, contactId);
+        initialValues.put(Table.MESSAGES._CONTENT, msg.getContent());
+        initialValues.put(Table.MESSAGES._STATUS, msg.getStatus().getValue());
+        return mDb.insert(Table.MESSAGES.TABLE_NAME, null, initialValues);
     }
 
     /**
@@ -173,9 +122,9 @@ public class DatabaseAdapter {
         openGuard();
         if(getContactId(contact.getPhone()) < 0){
             ContentValues initialValues = new ContentValues();
-            initialValues.put(COLUMN_PHONE, contact.getPhone());
-            initialValues.put(COLUMN_NAME, contact.getName());
-            return mDb.insert(TABLE_CONTACTS, null, initialValues);
+            initialValues.put(Table.CONTACTS._PHONE, contact.getPhone());
+            initialValues.put(Table.CONTACTS._NAME, contact.getName());
+            return mDb.insert(Table.CONTACTS.TABLE_NAME, null, initialValues);
         }else {
             return -1L;
         }
@@ -192,11 +141,11 @@ public class DatabaseAdapter {
             return -1;
         }
         String normalizedNumber = PhoneNumberUtils.normalizeNumber(phone);
-        Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
-                COLUMN_PHONE + " = '" + normalizedNumber + "'", null, null, null, null, null);
+        Cursor mCursor = mDb.query(Table.CONTACTS.TABLE_NAME, Table.CONTACTS.COLUMNS,
+                Table.CONTACTS._PHONE + " = '" + normalizedNumber + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
             mCursor.moveToFirst();
-            long contactId = mCursor.getLong(mCursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_ID));
+            long contactId = mCursor.getLong(mCursor.getColumnIndexOrThrow(Table.CONTACTS._ID));
             mCursor.close();
             return contactId;
         }else {
@@ -212,8 +161,8 @@ public class DatabaseAdapter {
      */
     public boolean deleteContact(Long contactId) {
         openGuard();
-        mDb.delete(TABLE_CHATS, COLUMN_CONTACT_ID + "=" + contactId, null);
-        return mDb.delete(TABLE_CONTACTS, COLUMN_ID + "=" + contactId, null) > 0;
+        mDb.delete(Table.MESSAGES.TABLE_NAME, Table.MESSAGES._CONTACT_ID + "=" + contactId, null);
+        return mDb.delete(Table.CONTACTS.TABLE_NAME, Table.CONTACTS._ID + "=" + contactId, null) > 0;
     }
 
     /**
@@ -274,12 +223,18 @@ public class DatabaseAdapter {
      * @param key klucz.
      * @return ID klucza.
      */
-    private long addOrUpdateKey(KeyPOJO key){
+    private long addOrUpdateKey(KeyPOJO key){ //todo update
         openGuard();
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(COLUMN_KEY, key.getKey());
-        initialValues.put(COLUMN_CONTACT_ID, key.getContactId());
-        return mDb.insertWithOnConflict(TABLE_KEYS, null, initialValues, SQLiteDatabase.CONFLICT_REPLACE);
+        if (getKey(key.getContactId()) == null){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Table.KEYS._KEY, key.getKey());
+            contentValues.put(Table.KEYS._CONTACT_ID, key.getContactId());
+            return mDb.insert(Table.KEYS.TABLE_NAME, null, contentValues);
+        }else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(Table.KEYS._KEY, key.getKey());
+            return mDb.update(Table.KEYS.TABLE_NAME, contentValues, Table.KEYS._CONTACT_ID + " = " + key.getContactId(), null);
+        }
     }
 
     /**
@@ -290,11 +245,11 @@ public class DatabaseAdapter {
     @Nullable
     private String getKey(long contactId){
         openGuard();
-        Cursor mCursor = mDb.query(TABLE_KEYS, new String[] {COLUMN_ID, COLUMN_CONTACT_ID, COLUMN_KEY},
-                COLUMN_CONTACT_ID + " = '" + contactId + "'", null, null, null, null, null);
+        Cursor mCursor = mDb.query(Table.KEYS.TABLE_NAME, Table.KEYS.COLUMNS,
+                Table.KEYS._CONTACT_ID + " = '" + contactId + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
             mCursor.moveToFirst();
-            String key = mCursor.getString(mCursor.getColumnIndexOrThrow(DatabaseAdapter.COLUMN_KEY));
+            String key = mCursor.getString(mCursor.getColumnIndexOrThrow(Table.KEYS._KEY));
             mCursor.close();
             return key;
         }else {
@@ -310,8 +265,8 @@ public class DatabaseAdapter {
      */
     private boolean checkIfContactExists(Long contactId){
         openGuard();
-        Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
-                COLUMN_ID + " = '" + contactId + "'", null, null, null, null, null);
+        Cursor mCursor = mDb.query(Table.CONTACTS.TABLE_NAME, Table.CONTACTS.COLUMNS,
+                Table.CONTACTS._ID + " = '" + contactId + "'", null, null, null, null, null);
         if (mCursor.getCount() > 0){
             mCursor.close();
             return true;
@@ -321,25 +276,47 @@ public class DatabaseAdapter {
         }
     }
 
-    //todo
+    /**
+     * Zwraca kursor z wiadomościami należącymi do chatu z kontaktem o podanym {@code contactId}.
+     * @param contactId ID kontaktu.
+     * @return kursor z wiadomościami.
+     */
     public Cursor fetchChat(long contactId){
         openGuard();
-        Cursor mCursor = mDb.query(TABLE_CHATS, new String[] {COLUMN_ID, COLUMN_DATETIME,
-                        COLUMN_CONTACT_ID, COLUMN_CONTENT, COLUMN_STATUS}, COLUMN_CONTACT_ID + " = " + contactId,
-                null, null, null, null, null);
+        Cursor mCursor = mDb.query(Table.MESSAGES.TABLE_NAME, Table.MESSAGES.COLUMNS,
+                Table.MESSAGES._CONTACT_ID + " = " + contactId, null, null, null, null, null);
         mCursor.moveToFirst();
         return mCursor;
     }
 
-    //todo
+    /**
+     * Zwraca kursor z kontaktami.
+     * @return kursor z kontaktami.
+     */
     public Cursor fetchContacts() {
         openGuard();
-        Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE,
-                COLUMN_NAME}, null, null, null, null, null);
+        Cursor mCursor = mDb.query(Table.CONTACTS.TABLE_NAME, Table.CONTACTS.COLUMNS, null, null, null, null, null);
         if (mCursor.getCount() > 0) {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+
+    @Nullable
+    public static ContactPOJO getContact(Cursor cursor){
+        if (cursor.isClosed()){
+            return null;
+        }
+        try {
+            long userId = cursor.getLong(cursor.getColumnIndexOrThrow(Table.CONTACTS._ID));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._PHONE));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._NAME));
+
+            return new ContactPOJO(userId, phone, name);
+
+        }catch (IllegalArgumentException e){
+            return null;
+        }
     }
 
     private void openGuard() throws SQLiteException {
