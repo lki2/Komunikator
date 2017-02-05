@@ -1,6 +1,5 @@
 package koncewicz.lukasz.komunikator.utils;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 
@@ -57,7 +56,7 @@ public class RsaUtils {
         return cipher.doFinal(plain);
     }
 
-    static byte[] RSADecrypt(final byte[] encryptedBytes, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException,
+    public static byte[] RSADecrypt(final byte[] encryptedBytes, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         Cipher cipher = Cipher.getInstance(algorithm);

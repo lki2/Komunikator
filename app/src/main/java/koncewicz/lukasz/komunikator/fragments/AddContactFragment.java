@@ -48,7 +48,6 @@ public class AddContactFragment extends Fragment {
                 addContact();
                 getActivity().getFragmentManager().popBackStack();
                 getActivity().getFragmentManager().popBackStack();
-                Toast.makeText(getActivity(), R.string.toast_contact_added, Toast.LENGTH_SHORT).show();
             }
         });
         return view;
@@ -70,11 +69,15 @@ public class AddContactFragment extends Fragment {
         String username = etUsername.getText().toString();
 
         DatabaseAdapter dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
-        Long userId = dbAdapter.addContact(new ContactPOJO(phone, username));
-        if (userId > 0){
-            dbAdapter.addContactKey(new KeyPOJO(key, userId));
+        Long contactId = dbAdapter.getContactId(phone);
+        if(contactId == -1){
+            contactId = dbAdapter.addContact(new ContactPOJO(phone, username));
+            dbAdapter.addOrUpdateContactKey(new KeyPOJO(key, contactId));
+            Toast.makeText(getActivity(), R.string.toast_contact_added, Toast.LENGTH_SHORT).show();
         }else{
-            Toast.makeText(getActivity(), R.string.toast_contact_exists, Toast.LENGTH_SHORT).show();
+            dbAdapter.addOrUpdateContactKey(new KeyPOJO(key, contactId));
+            Toast.makeText(getActivity(), R.string.toast_contact_exists, Toast.LENGTH_LONG).show();
         }
+
     }
 }

@@ -36,10 +36,10 @@ public class ProfileFragment extends Fragment {
     private static final int WIDTH = 1024;
     private static final int HEIGHT = 1024;
 
-    private static final String PREFS = "koncewicz.lukasz.komunikator";
-    private static final String PREFS_NAME = "NAME";
-    private static final String PREFS_PHONE = "PHONE";
-    private static final String PREFS_KEY = "KEY";
+    private static final String PREFS_PROFILE = "PROFILE";
+    private static final String PROFILE_NAME = "NAME";
+    private static final String PROFILE_PHONE = "PHONE";
+    private static final String PROFILE_KEY = "KEY";
 
     public static final String QR_NAME = "name";
     public static final String QR_PHONE = "phone";
@@ -83,17 +83,19 @@ public class ProfileFragment extends Fragment {
     }
 
     private void putToPrefs(String name, String phone, String key){
-        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(PREFS_NAME, name).apply();
-        prefs.edit().putString(PREFS_PHONE, phone).apply();
-        prefs.edit().putString(PREFS_KEY, key).apply();
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_PROFILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROFILE_NAME, name);
+        editor.putString(PROFILE_PHONE, phone);
+        editor.putString(PROFILE_KEY, key);
+        editor.apply();
     }
 
     private void getFromPrefs(){
-        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String name = prefs.getString(PREFS_NAME, null);
-        String phone = prefs.getString(PREFS_PHONE, null);
-        String publicKey = prefs.getString(PREFS_KEY, null);
+        SharedPreferences prefs = getActivity().getSharedPreferences(PREFS_PROFILE, Context.MODE_PRIVATE);
+        String name = prefs.getString(PROFILE_NAME, null);
+        String phone = prefs.getString(PROFILE_PHONE, null);
+        String publicKey = prefs.getString(PROFILE_KEY, null);
 
         if (phone != null && name != null && publicKey != null) {
             etPhone.setText(phone);

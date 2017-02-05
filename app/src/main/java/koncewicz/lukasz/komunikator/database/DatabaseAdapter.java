@@ -141,21 +141,27 @@ public class DatabaseAdapter {
     }
 
     /**
-     * Dodaje do bazy danych wiadomość powiązaną z kontaktem. Kontakt o danym ID musi istnieć.
+     * Dodaje do bazy danych wiadomość powiązaną z kontaktem.
      * @param msg wiadomość.
      * @return ID wiadomości albo -1.
      */
     public long addMsg(MessagePOJO msg) {
         openGuard();
-        if (checkIfContactExists(msg.getContactId())){
-            ContentValues initialValues = new ContentValues();
-            initialValues.put(COLUMN_CONTACT_ID, msg.getContactId());
-            initialValues.put(COLUMN_CONTENT, msg.getContent());
-            initialValues.put(COLUMN_STATUS, msg.getStatus().getValue());
-            return mDb.insert(TABLE_CHATS, null, initialValues);
-        }else {
+        long contactId = msg.getContactId();
+        if (contactId == -1) {
+            contactId = getContactId(msg.getSenderNumber());
+            if (contactId == -1) {
+                return -1L;
+            }
+        }else if (!checkIfContactExists(contactId)){
             return -1L;
         }
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(COLUMN_CONTACT_ID, contactId);
+        initialValues.put(COLUMN_CONTENT, msg.getContent());
+        initialValues.put(COLUMN_STATUS, msg.getStatus().getValue());
+        return mDb.insert(TABLE_CHATS, null, initialValues);
     }
 
     /**
@@ -165,7 +171,7 @@ public class DatabaseAdapter {
      */
     public long addContact(ContactPOJO contact) {
         openGuard();
-        if(getContact(contact.getPhone()) < 0){
+        if(getContactId(contact.getPhone()) < 0){
             ContentValues initialValues = new ContentValues();
             initialValues.put(COLUMN_PHONE, contact.getPhone());
             initialValues.put(COLUMN_NAME, contact.getName());
@@ -176,12 +182,15 @@ public class DatabaseAdapter {
     }
 
     /**
-     * Pobiera kontakt o podanym numerze telefonu.
+     * Pobiera ID kontaktu o podanym numerze telefonu.
      * @param phone numer telefonu.
      * @return ID kontaktu albo -1.
      */
-    public long getContact(String phone){
+    public long getContactId(String phone){
         openGuard();
+        if (phone == null){
+            return -1;
+        }
         String normalizedNumber = PhoneNumberUtils.normalizeNumber(phone);
         Cursor mCursor = mDb.query(TABLE_CONTACTS, new String[] {COLUMN_ID, COLUMN_PHONE, COLUMN_NAME},
                 COLUMN_PHONE + " = '" + normalizedNumber + "'", null, null, null, null, null);
@@ -212,7 +221,7 @@ public class DatabaseAdapter {
      * @param key klucz.
      * @return ID klucza albo -1.
      */
-    public long addContactKey(KeyPOJO key){
+    public long addOrUpdateContactKey(KeyPOJO key){
         if (checkIfContactExists(key.getContactId())){
             return addOrUpdateKey(key);
         }else {

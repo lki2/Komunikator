@@ -9,6 +9,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.database.ContactPOJO;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
@@ -29,8 +30,7 @@ public class AddContactsTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         SQLiteDatabase.loadLibs(appContext);
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(appContext);
-        dbAdapter.open("123");
+        DatabaseAdapter dbAdapter = new DatabaseAdapter(appContext, new CacheWordHandler(appContext));
 
         assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790561100", "Contact1")));
         assertEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790561100", "Contact1")));

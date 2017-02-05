@@ -80,13 +80,14 @@ public class ChatFragment extends Fragment{
         view.findViewById(R.id.btn_send).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String msgContent = etMsgContent.getText().toString();
-                etMsgContent.setText(null);
                 if (msgContent.length() > 0){
                     MessagePOJO msg = new MessagePOJO(contactId, msgContent, MessagePOJO.Status.SENT);
-                    scrollListToBottom();
-                    encryptMsgAndSend(msg);
-                    dbAdapter.addMsg(msg);
-                    refreshList();
+                    if(encryptMsgAndSend(msg)) {
+                        dbAdapter.addMsg(msg);
+                        etMsgContent.setText(null);
+                        refreshList();
+                        scrollListToBottom();
+                    }
                 }else {
                     Toast.makeText(getActivity(), R.string.toast_empty_message_content,Toast.LENGTH_SHORT).show();
                 }
@@ -153,29 +154,27 @@ public class ChatFragment extends Fragment{
         });
     }
 
-    private void encryptMsgAndSend(MessagePOJO msg){
+    private boolean encryptMsgAndSend(MessagePOJO msg){
         String contactKey = dbAdapter.getContactKey(contactId);
-        if (contactKey != null) {
-            try {
-                PublicKey pubK = RsaUtils.publicKeyFromBase64(contactKey);
-                PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
-
-                byte[] encryptedContent;
-                encryptedContent = RsaUtils.RSAEncrypt(msg.getContent().getBytes(), pubK);
-                encryptedContent = RsaUtils.RSAEncrypt(encryptedContent, privK);
-
-                sendEncryptedMsg(encryptedContent);
-            } catch (Exception e) {
-                e.printStackTrace(); //todo kontakt bez klucza
-            }
-        }
-        else {
+        if (contactKey == null) {
             Toast.makeText(getActivity(), R.string.toast_unbind_contact, Toast.LENGTH_SHORT).show();
+            return false;
         }
-    }
 
-    private void sendEncryptedMsg(byte[] msg){
-        new SmsSender(getActivity()).send(phone, msg);
+        try {
+            PublicKey contactPubK = RsaUtils.publicKeyFromBase64(contactKey);
+            PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
+
+            byte[] encryptedContent;
+            encryptedContent = RsaUtils.RSAEncrypt(msg.getContent().getBytes(), contactPubK);
+            encryptedContent = RsaUtils.RSAEncrypt(encryptedContent, privK);
+
+            new SmsSender(getActivity()).send(phone, encryptedContent);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace(); //todo brak sieci itp
+            return false;
+        }
     }
 
     /**
@@ -195,9 +194,7 @@ public class ChatFragment extends Fragment{
      * kursor w {@code dataAdapter}.
      */
     private void refreshList(){
-        if (dbAdapter == null || !dbAdapter.isOpen()){
-            dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
-        }
+        ((MainActivity)getActivity()).saveReceivedMsgs();
         Cursor newCursor = dbAdapter.fetchChat(contactId);
         Cursor oldCursor = (Cursor) dataAdapter.swapCursor(newCursor);
         if (oldCursor != null){

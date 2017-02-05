@@ -32,7 +32,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
     public static final String TAG = ContactsFragment.class.getName();
 
     DatabaseAdapter dbAdapter;
-    Cursor contactsCursor;
 
     ContactsCursorAdapter contactsAdapter;
     ListView listView;
@@ -59,6 +58,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
     public void onStart() {
         super.onStart();
         Log.w(TAG, "onStart()");
+        dbAdapter = ((MainActivity) getActivity()).getOpenDatabase();
         showToolbar();
         showContacts();
         getActivity().registerReceiver(broadcastBufferReceiver,
@@ -70,13 +70,14 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
         super.onStop();
         Log.d(TAG, "onStop()");
         getActivity().unregisterReceiver(broadcastBufferReceiver);
-        contactsCursor.close();
+        Cursor oldCursor = (Cursor) contactsAdapter.swapCursor(null);
+        if (oldCursor != null){
+            oldCursor.close();
+        }
     }
 
     private void showContacts() {
-        DatabaseAdapter dbAdapter = ((MainActivity) getActivity()).getOpenDatabase();
-
-        contactsCursor = dbAdapter.fetchContacts();
+        Cursor contactsCursor = dbAdapter.fetchContacts();
         contactsAdapter = new ContactsCursorAdapter(getActivity(), contactsCursor);
 
         listView.setAdapter(contactsAdapter);
@@ -119,12 +120,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener{
     }
 
     private void refreshList(){
-        if (dbAdapter == null || !dbAdapter.isOpen()){
-            dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
+        ((MainActivity)getActivity()).saveReceivedMsgs();
+        Cursor newCursor = dbAdapter.fetchContacts();
+        Cursor oldCursor = (Cursor) contactsAdapter.swapCursor(newCursor);
+        if (oldCursor != null){
+            oldCursor.close();
         }
-        contactsCursor = dbAdapter.fetchContacts();
-        // Ustawienie nowego kursora i zamknięcie poprzedniego
-        contactsAdapter.swapCursor(contactsCursor).close();
     }
 
     private void showToolbar(){

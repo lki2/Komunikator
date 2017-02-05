@@ -14,7 +14,7 @@
     <string name="toast_unbind_contact">Kontakt nie jest powiązany</string>
     <string name="toast_empty_message_content">Wpisz treść wiadomości</string>
     <string name="toast_incorrect_qr">Nieprawidłowy kod</string>
-    <string name="toast_contact_exists">Kontakt już istnieje</string>
+    <string name="toast_contact_exists">Kontakt już istnieje, zaktualizowano klucz publiczny</string>
     <string name="toast_contact_added">Dodano kontakt</string>
     <string name="hint_password">Hasło</string>
     <string name="hint_username">Nazwa użytkownika</string>
@@ -28,5 +28,6 @@
     <string name="bt_register">Zarejestruj</string>
     <string name="hint_confirm_password">Powtórz hasło</string>
     <string name="different_passwords">Hasła różnią się</string>
+    <string name="new_contact_name">Nowy kontakt</string>
 
 </resources>

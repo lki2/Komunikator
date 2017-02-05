@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,13 +14,18 @@ import android.view.MenuItem;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import info.guardianproject.cacheword.CacheWordHandler;
 import info.guardianproject.cacheword.ICacheWordSubscriber;
+import koncewicz.lukasz.komunikator.database.ContactPOJO;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
+import koncewicz.lukasz.komunikator.database.MessagePOJO;
 import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
 import koncewicz.lukasz.komunikator.fragments.LoginFragment;
 import koncewicz.lukasz.komunikator.fragments.RegisterFragment;
+import koncewicz.lukasz.komunikator.utils.MessagesBuffer;
 import koncewicz.lukasz.komunikator.utils.RsaUtils;
 
 public class MainActivity extends AppCompatActivity implements ICacheWordSubscriber {
@@ -40,9 +46,8 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
         myToolbar.setVisibility(Toolbar.GONE);
         setSupportActionBar(myToolbar);
 
-
         SQLiteDatabase.loadLibs(this);
-        mCacheWord = new CacheWordHandler(this);
+        mCacheWord = new CacheWordHandler(this, 5000);
         mCacheWord.connectToService();
     }
 
@@ -91,18 +96,32 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.w(TAG, "onResume()");
+    public void saveReceivedMsgs(){
+        MessagesBuffer buffer = new MessagesBuffer(this);
+        MessagePOJO[] msgs = buffer.popMessages();
+        for (MessagePOJO encryptedMsg: msgs) {
+            long userId = dbAdapter.getContactId(encryptedMsg.getSenderNumber());
+            Log.e("odebrane", encryptedMsg.getContent());
+            if(userId == -1){
+                dbAdapter.addContact(new ContactPOJO(encryptedMsg.getSenderNumber(), getString(R.string.new_contact_name)));
+                dbAdapter.addMsg(encryptedMsg);
+            }else {
+                try {
+                    PublicKey contactPubK = RsaUtils.publicKeyFromBase64(dbAdapter.getContactKey(userId));
+                    PrivateKey privK = RsaUtils.privateKeyFromBase64(dbAdapter.getPrivateKey());
 
-    }
+                    byte[] bytes = Base64.decode(encryptedMsg.getContent(), Base64.DEFAULT); //todo tutaj inne
+                    bytes = RsaUtils.RSADecrypt(bytes, contactPubK);
+                    bytes = RsaUtils.RSADecrypt(bytes, privK);
+                    String decryptedContent = new String(bytes);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.w(TAG, "onPause()");
-
+                    MessagePOJO decryptedMsg = new MessagePOJO(userId, decryptedContent, MessagePOJO.Status.RECEIVED);
+                    dbAdapter.addMsg(decryptedMsg);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -116,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
     }
 
     private void showFragment(Fragment fragment){
-        //fragment.setEnterTransition(new Slide(Gravity.RIGHT));
         FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, fragment);

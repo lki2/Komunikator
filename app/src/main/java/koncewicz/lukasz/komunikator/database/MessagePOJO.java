@@ -2,11 +2,17 @@ package koncewicz.lukasz.komunikator.database;
 
 import android.support.annotation.Nullable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MessagePOJO {
+    public static final String SENDER = "SENDER";
+    public static final String CONTENT = "CONTENT";
+    public static final String DATETIME = "DATETIME";
 
     public long getContactId(){
         return contactId;
-    };
+    }
 
     public String getContent() {
         return content;
@@ -14,6 +20,14 @@ public class MessagePOJO {
 
     public Status getStatus() {
         return status;
+    }
+
+    public String getSenderNumber() {
+        return senderNumber;
+    }
+
+    public String getDateTime() {
+        return dateTime;
     }
 
     public enum Status {
@@ -40,14 +54,45 @@ public class MessagePOJO {
         }
     }
 
-    private long contactId;
+    private long contactId = -1;
+    private String senderNumber;
     private String content;
-    private Status status;
-    private String datetime;
+    private Status status = Status.RECEIVED;
+    private String dateTime;
+
+
+    public MessagePOJO(JSONObject json){
+        try {
+            senderNumber = json.getString(SENDER);
+            content = json.getString(CONTENT);
+            dateTime = json.getString(DATETIME);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public MessagePOJO(String sender, String content, String dateTime){
+        this.senderNumber = sender;
+        this.content = content;
+        this.dateTime = dateTime;
+    }
 
     public MessagePOJO(long contactId, String content, Status status){
         this.contactId = contactId;
         this.content = content;
         this.status = status;
+    }
+
+    public JSONObject getJSON(){
+        try {
+            JSONObject json = new JSONObject();
+            json.put(SENDER, senderNumber);
+            json.put(CONTENT, content);
+            json.put(DATETIME, dateTime);
+            return json;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -9,8 +9,8 @@ import net.sqlcipher.database.SQLiteDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
 import koncewicz.lukasz.komunikator.database.MessagePOJO;
 
 import static org.junit.Assert.assertEquals;
@@ -29,10 +29,9 @@ public class AddMessagesTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         SQLiteDatabase.loadLibs(appContext);
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(appContext);
-        dbAdapter.open("123");
+        DatabaseAdapter dbAdapter = new DatabaseAdapter(appContext, new CacheWordHandler(appContext));
 
-        long contactId = dbAdapter.getContact("+11790561100");
+        long contactId = dbAdapter.getContactId("+11790561100");
         assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message RECEIVED", MessagePOJO.Status.RECEIVED)));
         assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message SENT", MessagePOJO.Status.SENT)));
         assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message FAILURE", MessagePOJO.Status.FAILURE)));

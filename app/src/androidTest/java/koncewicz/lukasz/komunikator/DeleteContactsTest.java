@@ -9,6 +9,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
 
 import static org.junit.Assert.assertEquals;
@@ -26,27 +27,26 @@ public class DeleteContactsTest {
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         SQLiteDatabase.loadLibs(appContext);
-        DatabaseAdapter dbAdapter = DatabaseAdapter.getInstance(appContext);
-        dbAdapter.open("123");
+        DatabaseAdapter dbAdapter = new DatabaseAdapter(appContext, new CacheWordHandler(appContext));
 
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11 790561100")));
-        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContact("+11 790561100")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11 790 561 101")));
-        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContact("+11 790 561 101")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11 790-561-102")));
-        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContact("+11 790-561-102")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561103")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561104")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561105")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561106")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561107")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561108")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561109")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561110")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561111")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561112")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561113")));
-        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContact("+11790561114")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790561100")));
+        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790561100")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790 561 101")));
+        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790 561 101")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790-561-102")));
+        assertEquals(false, dbAdapter.deleteContact(dbAdapter.getContactId("+11 790-561-102")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561103")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561104")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561105")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561106")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561107")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561108")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561109")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561110")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561111")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561112")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561113")));
+        assertEquals(true, dbAdapter.deleteContact(dbAdapter.getContactId("+11790561114")));
 
         dbAdapter.close();
 
