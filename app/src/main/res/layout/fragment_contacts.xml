@@ -14,7 +14,8 @@
         <ListView android:id="@+id/contacts_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_main" />
+            android:background="@color/bg_main"
+            android:divider="@color/white"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_contact_fab"

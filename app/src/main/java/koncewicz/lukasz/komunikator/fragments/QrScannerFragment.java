@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,7 @@ public class QrScannerFragment extends Fragment implements ZXingScannerView.Resu
     public void handleResult(Result rawResult) {
         try {
             Bundle bundle = parseQr(rawResult.getText());
+            mScannerView.stopCamera(); //fixme widok z kamery nie pojawia się po probie dodania kolejnego kontaktu
             showAddUserFragment(bundle);
         } catch (JSONException e) {
             Toast.makeText(getActivity(), R.string.toast_incorrect_qr, Toast.LENGTH_LONG).show();

@@ -65,10 +65,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/tv_key_label" />
 
+        <!-- Public Key Label -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_key" />
+            android:id="@+id/tv_key"/>
 
     </LinearLayout>
 

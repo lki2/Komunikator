@@ -18,7 +18,9 @@ public class SmsReceiver extends BroadcastReceiver
 
     Context context;
 
-    //todo exceptions in RSA cipher
+    //todo animacje przejscia miedzy fragmentami
+    //todo orientacja pozioma
+    //todo pusta lista kontaktow/wiadomosci
     //todo edycja kontaktu
     //todo usuwanie wiadomosci
     //todo status wiadomosci

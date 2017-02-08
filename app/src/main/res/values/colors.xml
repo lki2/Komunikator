@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#26ae90</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+
 
     <color name="myMsgBg">#b75959</color>
     <color name="failureMsgBg">#c9a3a3</color>
     <color name="failureMsgFg">#848484</color>
     <color name="foreignMsgBg">#699e5a</color>
 
+    <color name="colorPrimary">#26ae90</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
 
-
-    <color name="bg_login">#26ae90</color>
+    <color name="bg_login">#28b999</color>
     <color name="bg_register">#2e3237</color>
-    <color name="bg_main">#428bca</color>
+    <color name="bg_main">#4690cf</color>
     <color name="white">#ffffff</color>
     <color name="input_login">#222222</color>
     <color name="input_login_hint">#999999</color>

@@ -34,8 +34,12 @@ public class LoginFragment extends Fragment implements View.OnClickListener{
         InputMethodManager inputManager = (InputMethodManager)
               getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        inputManager.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+        View view = getActivity().getCurrentFocus();
+        if (view != null){
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+
         String passphrase = etPassword.getText().toString();
 
         if (passphrase.length() < 1){
