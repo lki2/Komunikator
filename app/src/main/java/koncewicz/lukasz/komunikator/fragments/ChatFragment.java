@@ -132,7 +132,7 @@ public class ChatFragment extends Fragment{
         Cursor chatCursor = dbAdapter.fetchChat(contactId);
         dataAdapter = new ChatCursorAdapter(getActivity(), chatCursor);
 
-        messageList.setStackFromBottom(true);
+        //messageList.setStackFromBottom(true); //fixme przewijanie do ostatnio otrzymanej wiadomosci
         messageList.setAdapter(dataAdapter);
     }
 
