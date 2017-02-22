@@ -18,21 +18,17 @@ public class ChatCursorAdapter extends CursorAdapter {
         super(context, cursor, 0);
     }
 
-    // The newView method is used to inflate a new view and return it,
-    // you don't bind any data to the view at this point.
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(R.layout.message, parent, false);
     }
 
-    // The bindView method is used to bind all data to a given view
-    // such as setting the text on a TextView.
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
         LinearLayout root = (LinearLayout) view;
         int statusInt = cursor.getInt(cursor.getColumnIndexOrThrow(Table.MESSAGES._STATUS));
-        MessagePOJO.Status status = MessagePOJO.Status.fromInt(statusInt);
+        Message.Status status = Message.Status.fromInt(statusInt);
         assert status != null;
         switch (status){
             case FAILURE:

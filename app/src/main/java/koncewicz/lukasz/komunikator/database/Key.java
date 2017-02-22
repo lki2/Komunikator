@@ -1,19 +1,19 @@
 package koncewicz.lukasz.komunikator.database;
 
-public class KeyPOJO {
+public class Key {
     private String key;
     private Long contactId;
 
-    public KeyPOJO(String key, Long contactId){
+    public Key(String key, Long contactId){
         this.key = key;
         this.contactId = contactId;
     }
 
-    public String getKey() {
+    String getKey() {
         return key;
     }
 
-    public Long getContactId(){
+    Long getContactId(){
         return contactId;
     }
 }

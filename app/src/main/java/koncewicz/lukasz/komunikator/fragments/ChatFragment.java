@@ -23,13 +23,13 @@ import java.security.PublicKey;
 
 import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.database.ChatCursorAdapter;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
+import koncewicz.lukasz.komunikator.database.Contact;
 import koncewicz.lukasz.komunikator.utils.RsaUtils;
 import koncewicz.lukasz.komunikator.utils.SmsReceiver;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.utils.SmsSender;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
+import koncewicz.lukasz.komunikator.database.Message;
 
 public class ChatFragment extends Fragment{
 
@@ -49,7 +49,7 @@ public class ChatFragment extends Fragment{
     private String phone; // Numer telefonu kontaktu.
     private String name;
 
-    public static ChatFragment newInstance(ContactPOJO contact) {
+    public static ChatFragment newInstance(Contact contact) {
         ChatFragment fragment = new ChatFragment();
         Bundle args = new Bundle();
         args.putLong(CONTACT_ID, contact.getId());
@@ -74,7 +74,7 @@ public class ChatFragment extends Fragment{
             public void onClick(View v) {
                 String msgContent = etMsgContent.getText().toString();
                 if (msgContent.length() > 0){
-                    MessagePOJO msg = new MessagePOJO(contactId, msgContent, MessagePOJO.Status.SENT);
+                    Message msg = new Message(contactId, msgContent, Message.Status.SENT);
                     if(encryptMsgAndSend(msg)) {
                         dbAdapter.addMsg(msg);
                         etMsgContent.setText(null);
@@ -136,7 +136,7 @@ public class ChatFragment extends Fragment{
         messageList.setAdapter(dataAdapter);
     }
 
-    private boolean encryptMsgAndSend(MessagePOJO msg){
+    private boolean encryptMsgAndSend(Message msg){
         String contactKey = dbAdapter.getContactKey(contactId);
         if (contactKey == null) {
             Toast.makeText(getActivity(), R.string.toast_unbind_contact, Toast.LENGTH_SHORT).show();

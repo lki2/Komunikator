@@ -94,7 +94,7 @@ public class DatabaseAdapter {
      * @param msg wiadomość.
      * @return ID wiadomości albo -1.
      */
-    public long addMsg(MessagePOJO msg) {
+    public long addMsg(Message msg) {
         openGuard();
         long contactId = msg.getContactId();
         if (contactId == -1) {
@@ -118,7 +118,7 @@ public class DatabaseAdapter {
      * @param contact kontakt.
      * @return ID kontaktu albo -1.
      */
-    public long addContact(ContactPOJO contact) {
+    public long addContact(Contact contact) {
         openGuard();
         if(getContactId(contact.getPhone()) < 0){
             ContentValues initialValues = new ContentValues();
@@ -170,7 +170,7 @@ public class DatabaseAdapter {
      * @param key klucz.
      * @return ID klucza albo -1.
      */
-    public long addOrUpdateContactKey(KeyPOJO key){
+    public long addOrUpdateContactKey(Key key){
         if (checkIfContactExists(key.getContactId())){
             return addOrUpdateKey(key);
         }else {
@@ -214,8 +214,8 @@ public class DatabaseAdapter {
      * @return {@code true} w przypadku powodzenia albo {@code false}.
      */
     public boolean addOrUpdateOwnKeyPair(String publicKey, String privateKey){
-        return addOrUpdateKey(new KeyPOJO(publicKey, publicKeyContactId)) > 0
-                && addOrUpdateKey(new KeyPOJO(privateKey, privateKeyContactId)) > 0;
+        return addOrUpdateKey(new Key(publicKey, publicKeyContactId)) > 0
+                && addOrUpdateKey(new Key(privateKey, privateKeyContactId)) > 0;
     }
 
     /**
@@ -223,7 +223,7 @@ public class DatabaseAdapter {
      * @param key klucz.
      * @return ID klucza.
      */
-    private long addOrUpdateKey(KeyPOJO key){ //todo update
+    private long addOrUpdateKey(Key key){ //todo update
         openGuard();
         if (getKey(key.getContactId()) == null){
             ContentValues contentValues = new ContentValues();
@@ -303,7 +303,7 @@ public class DatabaseAdapter {
     }
 
     @Nullable
-    public static ContactPOJO getContact(Cursor cursor){
+    public static Contact getContact(Cursor cursor){
         if (cursor.isClosed()){
             return null;
         }
@@ -312,7 +312,7 @@ public class DatabaseAdapter {
             String phone = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._PHONE));
             String name = cursor.getString(cursor.getColumnIndexOrThrow(Table.CONTACTS._NAME));
 
-            return new ContactPOJO(userId, phone, name);
+            return new Contact(userId, phone, name);
 
         }catch (IllegalArgumentException e){
             return null;

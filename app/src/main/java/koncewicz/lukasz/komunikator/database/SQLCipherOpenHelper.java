@@ -1,5 +1,7 @@
 package koncewicz.lukasz.komunikator.database;
-
+/*
+    klasa z zewnętrznej biblioteki
+ */
 import android.content.Context;
 import android.util.Log;
 

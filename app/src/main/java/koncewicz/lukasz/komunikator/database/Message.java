@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MessagePOJO {
-    public static final String SENDER = "SENDER";
-    public static final String CONTENT = "CONTENT";
-    public static final String DATETIME = "DATETIME";
+public class Message {
+    private static final String SENDER = "SENDER";
+    private static final String CONTENT = "CONTENT";
+    private static final String DATETIME = "DATETIME";
 
     public long getContactId(){
         return contactId;
@@ -61,7 +61,7 @@ public class MessagePOJO {
     private String dateTime;
 
 
-    public MessagePOJO(JSONObject json){
+    public Message(JSONObject json){
         try {
             senderNumber = json.getString(SENDER);
             content = json.getString(CONTENT);
@@ -71,13 +71,13 @@ public class MessagePOJO {
         }
     }
 
-    public MessagePOJO(String sender, String content, String dateTime){
+    public Message(String sender, String content, String dateTime){
         this.senderNumber = sender;
         this.content = content;
         this.dateTime = dateTime;
     }
 
-    public MessagePOJO(long contactId, String content, Status status){
+    public Message(long contactId, String content, Status status){
         this.contactId = contactId;
         this.content = content;
         this.status = status;

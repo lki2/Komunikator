@@ -15,8 +15,8 @@ import android.widget.Toast;
 import koncewicz.lukasz.komunikator.MainActivity;
 import koncewicz.lukasz.komunikator.R;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.KeyPOJO;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
+import koncewicz.lukasz.komunikator.database.Key;
+import koncewicz.lukasz.komunikator.database.Contact;
 
 public class AddContactFragment extends Fragment {
     //private static final String TAG = AddContactFragment.class.getName();
@@ -71,11 +71,11 @@ public class AddContactFragment extends Fragment {
         DatabaseAdapter dbAdapter = ((MainActivity)getActivity()).getOpenDatabase();
         Long contactId = dbAdapter.getContactId(phone);
         if(contactId == -1){
-            contactId = dbAdapter.addContact(new ContactPOJO(phone, username));
-            dbAdapter.addOrUpdateContactKey(new KeyPOJO(key, contactId));
+            contactId = dbAdapter.addContact(new Contact(phone, username));
+            dbAdapter.addOrUpdateContactKey(new Key(key, contactId));
             Toast.makeText(getActivity(), R.string.toast_contact_added, Toast.LENGTH_SHORT).show();
         }else{
-            dbAdapter.addOrUpdateContactKey(new KeyPOJO(key, contactId));
+            dbAdapter.addOrUpdateContactKey(new Key(key, contactId));
             Toast.makeText(getActivity(), R.string.toast_contact_exists, Toast.LENGTH_LONG).show();
         }
 

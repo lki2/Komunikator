@@ -10,9 +10,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import info.guardianproject.cacheword.CacheWordHandler;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
+import koncewicz.lukasz.komunikator.database.Contact;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,25 +31,25 @@ public class AddContactsTest {
         SQLiteDatabase.loadLibs(appContext);
         DatabaseAdapter dbAdapter = new DatabaseAdapter(appContext, new CacheWordHandler(appContext));
 
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790561100", "Contact1")));
-        assertEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790561100", "Contact1")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790 561 101", "Contact2")));
-        assertEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790 561 101", "Contact2")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790-561-102", "Contact3")));
-        assertEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11 790-561-102", "Contact3")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561103", "Contact4")));
-        assertEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561103", "Contact4")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561104", "Contact5")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561105", "Contact6")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561106", "Contact7")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561107", "Contact8")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561108", "Contact9")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561109", "Contact10")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561110", "Contact11")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561111", "Contact12")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561112", "Contact13")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561113", "Contact14")));
-        assertNotEquals(-1L, dbAdapter.addContact(new ContactPOJO("+11790561114", "Contact15")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11 790561100", "Contact1")));
+        assertEquals(-1L, dbAdapter.addContact(new Contact("+11 790561100", "Contact1")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11 790 561 101", "Contact2")));
+        assertEquals(-1L, dbAdapter.addContact(new Contact("+11 790 561 101", "Contact2")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11 790-561-102", "Contact3")));
+        assertEquals(-1L, dbAdapter.addContact(new Contact("+11 790-561-102", "Contact3")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561103", "Contact4")));
+        assertEquals(-1L, dbAdapter.addContact(new Contact("+11790561103", "Contact4")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561104", "Contact5")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561105", "Contact6")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561106", "Contact7")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561107", "Contact8")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561108", "Contact9")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561109", "Contact10")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561110", "Contact11")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561111", "Contact12")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561112", "Contact13")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561113", "Contact14")));
+        assertNotEquals(-1L, dbAdapter.addContact(new Contact("+11790561114", "Contact15")));
 
         dbAdapter.close();
     }

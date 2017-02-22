@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 
 import info.guardianproject.cacheword.CacheWordHandler;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
+import koncewicz.lukasz.komunikator.database.Message;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,11 +32,11 @@ public class AddMessagesTest {
         DatabaseAdapter dbAdapter = new DatabaseAdapter(appContext, new CacheWordHandler(appContext));
 
         long contactId = dbAdapter.getContactId("+11790561100");
-        assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message RECEIVED", MessagePOJO.Status.RECEIVED)));
-        assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message SENT", MessagePOJO.Status.SENT)));
-        assertNotEquals(-1L, dbAdapter.addMsg(new MessagePOJO(contactId, "Message FAILURE", MessagePOJO.Status.FAILURE)));
-        assertEquals(-1L, dbAdapter.addMsg(new MessagePOJO(100, "Message FAILURE", MessagePOJO.Status.FAILURE)));
-        assertEquals(-1L, dbAdapter.addMsg(new MessagePOJO(-23, "Message FAILURE", MessagePOJO.Status.FAILURE)));
+        assertNotEquals(-1L, dbAdapter.addMsg(new Message(contactId, "Message RECEIVED", Message.Status.RECEIVED)));
+        assertNotEquals(-1L, dbAdapter.addMsg(new Message(contactId, "Message SENT", Message.Status.SENT)));
+        assertNotEquals(-1L, dbAdapter.addMsg(new Message(contactId, "Message FAILURE", Message.Status.FAILURE)));
+        assertEquals(-1L, dbAdapter.addMsg(new Message(100, "Message FAILURE", Message.Status.FAILURE)));
+        assertEquals(-1L, dbAdapter.addMsg(new Message(-23, "Message FAILURE", Message.Status.FAILURE)));
         dbAdapter.close();
     }
 }

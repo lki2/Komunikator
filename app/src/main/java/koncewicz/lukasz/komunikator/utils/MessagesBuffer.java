@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
+import koncewicz.lukasz.komunikator.database.Message;
 
 public class MessagesBuffer {
 
@@ -20,7 +20,7 @@ private SharedPreferences prefs;
         prefs = ctx.getSharedPreferences(PREFS_MSGS, Context.MODE_PRIVATE);
     }
 
-    public void putMessage(MessagePOJO msg) {
+    public void putMessage(Message msg) {
         int count = prefs.getInt(MSGS_COUNT, 0);
 
         SharedPreferences.Editor editor = prefs.edit();
@@ -29,18 +29,18 @@ private SharedPreferences prefs;
         editor.apply();
     }
 
-    public MessagePOJO[] popMessages(){
+    public Message[] popMessages(){
         int count = prefs.getInt(MSGS_COUNT, 0);
         if (count == 0){
-            return new MessagePOJO[0];
+            return new Message[0];
         }
 
-        MessagePOJO[] list = new MessagePOJO[count];
+        Message[] list = new Message[count];
         SharedPreferences.Editor editor = prefs.edit();
         for (int i = 0; i < count; i++){
             try {
                 JSONObject json = new JSONObject(prefs.getString(MSGS_TAG + i, null));
-                list[i] = new MessagePOJO(json);
+                list[i] = new Message(json);
                 editor.remove(MSGS_TAG + i);
             } catch (JSONException e) {
                 e.printStackTrace();

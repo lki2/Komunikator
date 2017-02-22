@@ -7,7 +7,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
+import koncewicz.lukasz.komunikator.database.Message;
 import koncewicz.lukasz.komunikator.utils.MessagesBuffer;
 
 import static org.junit.Assert.assertEquals;
@@ -27,11 +27,11 @@ public class MessagesBufferTest {
 
         MessagesBuffer buffer = new MessagesBuffer(appContext);
 
-        MessagePOJO msg0 = new MessagePOJO("phone1", "content1", "dateTime1");
-        MessagePOJO msg1 = new MessagePOJO("phone2", "content2", "dateTime2");
-        MessagePOJO msg2 = new MessagePOJO("phone3", "content3", "dateTime3");
-        MessagePOJO msg3 = new MessagePOJO("phone4", "content4", "dateTime4");
-        MessagePOJO msg4 = new MessagePOJO("phone5", "content5", "dateTime5");
+        Message msg0 = new Message("phone1", "content1", "dateTime1");
+        Message msg1 = new Message("phone2", "content2", "dateTime2");
+        Message msg2 = new Message("phone3", "content3", "dateTime3");
+        Message msg3 = new Message("phone4", "content4", "dateTime4");
+        Message msg4 = new Message("phone5", "content5", "dateTime5");
 
         buffer.putMessage(msg0);
         buffer.putMessage(msg1);
@@ -39,7 +39,7 @@ public class MessagesBufferTest {
         buffer.putMessage(msg3);
         buffer.putMessage(msg4);
 
-        MessagePOJO[] msgs = buffer.popMessages();
+        Message[] msgs = buffer.popMessages();
 
         assertEquals(msgs.length, 5);
 

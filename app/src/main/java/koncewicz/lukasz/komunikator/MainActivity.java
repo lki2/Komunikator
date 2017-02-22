@@ -20,9 +20,9 @@ import java.security.PublicKey;
 
 import info.guardianproject.cacheword.CacheWordHandler;
 import info.guardianproject.cacheword.ICacheWordSubscriber;
-import koncewicz.lukasz.komunikator.database.ContactPOJO;
+import koncewicz.lukasz.komunikator.database.Contact;
 import koncewicz.lukasz.komunikator.database.DatabaseAdapter;
-import koncewicz.lukasz.komunikator.database.MessagePOJO;
+import koncewicz.lukasz.komunikator.database.Message;
 import koncewicz.lukasz.komunikator.fragments.ContactsFragment;
 import koncewicz.lukasz.komunikator.fragments.LoginFragment;
 import koncewicz.lukasz.komunikator.fragments.RegisterFragment;
@@ -100,11 +100,11 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
 
     public void saveReceivedMsgs(){
         MessagesBuffer buffer = new MessagesBuffer(this);
-        MessagePOJO[] msgs = buffer.popMessages();
-        for (MessagePOJO encryptedMsg: msgs) {
+        Message[] msgs = buffer.popMessages();
+        for (Message encryptedMsg: msgs) {
             long userId = dbAdapter.getContactId(encryptedMsg.getSenderNumber());
             if(userId == -1){
-                dbAdapter.addContact(new ContactPOJO(encryptedMsg.getSenderNumber(), getString(R.string.new_contact_name)));
+                dbAdapter.addContact(new Contact(encryptedMsg.getSenderNumber(), getString(R.string.new_contact_name)));
                 dbAdapter.addMsg(encryptedMsg);
             }else {
                 try {
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements ICacheWordSubscri
                     bytes = RsaUtils.RSADecrypt(bytes, privK);
                     String decryptedContent = new String(bytes);
 
-                    MessagePOJO decryptedMsg = new MessagePOJO(userId, decryptedContent, MessagePOJO.Status.RECEIVED);
+                    Message decryptedMsg = new Message(userId, decryptedContent, Message.Status.RECEIVED);
                     dbAdapter.addMsg(decryptedMsg);
                 }catch (Exception e){
                     e.printStackTrace();
